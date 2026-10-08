@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>溫習手帳 ・ 學習工作台</title>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/ma-shan-zheng@5/index.css" rel="stylesheet">
+<style>
+:root{
+  /* 手帳紙感配色 */
+  --paper:#f7f2e6; --paper-line:#e9e0cb;
+  --note:#fffdf4; --note-border:#e6dcc4;
+  --ink:#3b362c; --ink-soft:#8a8069;
+  --stamp:#c0574a;            /* 印泥紅 */
+  --blue:#3f6db3;             /* 鋼筆藍 */
+  --tape-pink:#f0b7c4; --tape-mint:#a9d6b6; --tape-yellow:#f3d788; --tape-blue:#a9c6e8;
+  --radius:6px;
+  --hand:"Ma Shan Zheng","Microsoft JhengHei",cursive;
+  --ease-quart:cubic-bezier(0.25,1,0.5,1);
+  --ease-quint:cubic-bezier(0.22,1,0.36,1);
+  --ease-expo:cubic-bezier(0.16,1,0.3,1);
+  --d-instant:120ms; --d-fast:220ms; --d-mid:380ms; --d-hero:640ms;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--paper);
+  background-image:repeating-linear-gradient(transparent 0 27px, var(--paper-line) 27px 28px);
+  color:var(--ink);
+  font-family:"Microsoft JhengHei","PingFang HK","PingFang TC",sans-serif;
+  font-size:16px;
+  line-height:1.8;padding:24px 20px 40px;max-width:960px;margin:0 auto;
+}
+h1{font-family:var(--hand);font-size:44px;font-weight:400;letter-spacing:2px}
+.sub{color:var(--ink-soft);font-size:15px;margin-top:2px}
+
+/* ---------- 入場 ---------- */
+.hero{animation:hero-in var(--d-hero) var(--ease-expo) both}
+.hero h1 .wave{display:inline-block;animation:wave 900ms var(--ease-quart) .55s both;transform-origin:70% 70%}
+@keyframes hero-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes wave{
+  0%{transform:rotate(0)} 20%{transform:rotate(16deg)}
+  45%{transform:rotate(-10deg)} 70%{transform:rotate(8deg)}
+  100%{transform:rotate(0)}
+}
+
+/* ---------- 章節標題（手寫 + 螢光筆底） ---------- */
+.section-title{font-family:var(--hand);font-size:27px;font-weight:400;margin:34px 0 14px;
+  animation:hero-in var(--d-hero) var(--ease-expo) both;animation-delay:calc(var(--i,0)*80ms + 100ms)}
+.section-title span{background:linear-gradient(transparent 55%, var(--hl,var(--tape-yellow)) 55% 92%, transparent 92%);padding:0 4px}
+
+/* ---------- 總覽：手帳數字 ---------- */
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;margin-top:14px}
+.stat{background:transparent;text-align:center;padding:14px 6px 10px;position:relative;
+  animation:card-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*90ms + 150ms)}
+.stat .num{font-family:Georgia,"Times New Roman",serif;font-size:46px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat .lbl{font-size:14px;color:var(--ink-soft);margin-top:4px}
+.stat::after{content:"";display:block;width:56px;height:4px;margin:8px auto 0;border-radius:99px;background:var(--uc,var(--tape-blue));opacity:.85}
+.n-ink{color:var(--ink)} .n-blue{color:var(--blue)} .n-stamp{color:var(--stamp)} .n-green{color:#4a8a5c}
+
+/* ---------- 課程便簽 ---------- */
+.course-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px;margin-top:6px}
+.course{position:relative;background:var(--note);border:1px solid var(--note-border);border-radius:2px;
+  padding:22px 20px 18px;transform:rotate(var(--rot,0deg));
+  box-shadow:0 3px 10px rgba(80,66,40,.10), 0 1px 2px rgba(80,66,40,.08);
+  animation:note-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*110ms + 200ms);
+  transition:transform var(--d-fast) var(--ease-quart),box-shadow var(--d-fast) var(--ease-quart)}
+.course:hover{transform:rotate(0deg) translateY(-4px);box-shadow:0 10px 22px rgba(80,66,40,.16), 0 2px 4px rgba(80,66,40,.08)}
+.course::before{ /* 和紙膠帶 */
+  content:"";position:absolute;top:-11px;left:50%;width:96px;height:24px;
+  transform:translateX(-50%) rotate(var(--tape-rot,-2deg));
+  background:var(--tape,var(--tape-yellow));opacity:.82;border-radius:2px;
+  box-shadow:0 1px 2px rgba(80,66,40,.12);
+}
+.course h3{font-family:var(--hand);font-size:25px;font-weight:400;letter-spacing:1px}
+.course .ch{font-size:13.5px;color:var(--ink-soft);margin:2px 0 12px}
+.course .mini-stats{display:flex;gap:14px;font-size:14.5px;margin-bottom:14px;border-top:1px dashed var(--note-border);border-bottom:1px dashed var(--note-border);padding:8px 0}
+.course .mini-stats b{font-variant-numeric:tabular-nums}
+.course .btns{display:flex;gap:8px;flex-wrap:wrap}
+@keyframes note-in{from{opacity:0;transform:rotate(var(--rot,0deg)) translateY(16px)}to{opacity:1;transform:rotate(var(--rot,0deg))}}
+
+/* ---------- 按鈕（手帳印章/鋼筆風） ---------- */
+.btn{position:relative;display:inline-block;background:var(--blue);color:#fdfaf0;border:none;border-radius:var(--radius);
+  padding:9px 20px;font-size:14.5px;font-weight:600;cursor:pointer;text-decoration:none;
+  transition:transform var(--d-instant) var(--ease-quart),filter var(--d-fast) var(--ease-quart)}
+.btn:hover{transform:translateY(-2px) rotate(-1deg);filter:brightness(1.06)}
+.btn:active{transform:scale(.95)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink-soft)}
+.btn.wrong-link{background:transparent;color:var(--stamp);border:1.5px dashed var(--stamp)}
+
+/* ---------- 考前檢核表 ---------- */
+.review-card{position:relative;background:var(--note);border:1px solid var(--note-border);border-radius:2px;
+  padding:20px 22px;transform:rotate(.4deg);
+  box-shadow:0 3px 10px rgba(80,66,40,.10);
+  animation:note-in var(--d-mid) var(--ease-quint) both;animation-delay:250ms}
+.review-card::before{content:"";position:absolute;top:-11px;left:32px;width:110px;height:24px;
+  transform:rotate(-3deg);background:var(--tape-pink);opacity:.82;border-radius:2px}
+.review-item{display:flex;gap:12px;align-items:flex-start;border-bottom:1px dashed var(--note-border);
+  padding:12px 2px;animation:card-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*70ms + 300ms)}
+.review-item:last-child{border-bottom:none}
+.review-item .info{flex:1}
+.review-item .course-name{font-size:13.5px;color:var(--ink-soft)}
+.review-item .tag-name{font-weight:600;font-size:16px;transition:color var(--d-fast) var(--ease-quart)}
+.review-item .pct{font-size:14px;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.review-item .advice{font-size:14.5px;margin-top:3px;color:var(--ink)}
+.review-item.done .tag-name,.review-item.done .advice{color:var(--ink-soft);text-decoration:line-through;text-decoration-color:var(--stamp);text-decoration-thickness:1.5px}
+
+/* 手繪勾選框 */
+.check{flex:none;width:26px;height:26px;margin-top:4px;border:2px solid var(--ink);border-radius:4px;
+  background:transparent;cursor:pointer;position:relative;transform:rotate(-2deg);
+  transition:transform var(--d-instant) var(--ease-quart),border-color var(--d-fast) var(--ease-quart)}
+.check:hover{transform:rotate(2deg) scale(1.08)}
+.check::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;
+  font-family:var(--hand);font-size:25px;color:var(--stamp);transform:scale(0);transform-origin:center;
+  transition:transform var(--d-fast) var(--ease-quint)}
+.check.on{border-color:var(--stamp)}
+.check.on::after{transform:scale(1.1) rotate(-8deg)}
+
+/* 印章標籤 */
+.stamp{flex:none;font-family:var(--hand);font-size:16px;color:var(--stamp);border:2px solid var(--stamp);
+  border-radius:4px;padding:1px 8px;transform:rotate(-5deg);opacity:.9;white-space:nowrap;margin-top:4px}
+.stamp.amber{color:#b8862e;border-color:#b8862e;transform:rotate(3deg)}
+.all-good{background:#eef6ee;border:1.5px dashed #4a8a5c;border-radius:var(--radius);padding:14px 18px;color:#3d7050}
+.empty-hint{color:var(--ink-soft)}
+
+/* ---------- 新增課程 memo ---------- */
+.howto{position:relative;background:var(--note);border:1px dashed var(--note-border);border-radius:2px;
+  padding:20px 22px;color:var(--ink-soft);font-size:14.5px;transform:rotate(-.5deg);
+  box-shadow:0 2px 8px rgba(80,66,40,.08);
+  animation:note-in var(--d-mid) var(--ease-quint) both;animation-delay:300ms}
+.howto::before{content:"";position:absolute;top:-11px;right:40px;width:96px;height:24px;
+  transform:rotate(4deg);background:var(--tape-mint);opacity:.82;border-radius:2px}
+.howto b{color:var(--ink)}
+.howto code{background:#f1ead6;padding:1px 6px;border-radius:4px;font-size:12px;color:var(--stamp)}
+
+.footer-note{color:var(--ink-soft);font-size:13.5px;text-align:center;margin-top:36px}
+
+@keyframes card-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1><span class="wave">📒</span> 溫習手帳</h1>
+  <p class="sub">統一管理所有課程 ・ 錯題與弱項全記錄 ・ 考前針對性溫習</p>
+</div>
+
+<h2 class="section-title" style="--i:0"><span style="--hl:var(--tape-blue)">📈 學習記錄</span></h2>
+<div class="stat-row" id="stat-row"></div>
+
+<h2 class="section-title" style="--i:1"><span style="--hl:var(--tape-yellow)">📚 我的課程</span></h2>
+<div class="course-grid" id="course-grid"></div>
+
+<h2 class="section-title" style="--i:2"><span style="--hl:var(--tape-pink)">🎯 考前檢核表（溫完一項勾一項）</span></h2>
+<div class="review-card">
+  <div id="review-area"></div>
+</div>
+
+<h2 class="section-title" style="--i:3"><span style="--hl:var(--tape-mint)">📤 備份與報告</span></h2>
+<div class="howto">
+  <b>記錄即時保存在瀏覽器本機。</b>建議每週或考前匯出一次，雙重保障：<br>
+  ① <b>學習報告（MD）</b>——含日期、各科對率、弱項清單、錯題全文與詳解，可直接列印溫習<br>
+  ② <b>備份檔（JSON）</b>——換電腦或換瀏覽器時「匯入備份」即可還原全部記錄<br>
+  <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn" onclick="exportMD()">📝 匯出學習報告（MD）</button>
+    <button class="btn ghost" onclick="exportJSON()">💾 匯出備份（JSON）</button>
+    <button class="btn ghost" onclick="document.getElementById('import-file').click()">📥 匯入備份</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(this.files[0]);this.value=''">
+  </div>
+</div>
+
+<h2 class="section-title" style="--i:4"><span style="--hl:var(--tape-mint)">➕ 如何新增課程</span></h2>
+<div class="howto">
+  <b>很簡單：</b>把新課文的圖片上傳給我，說一聲「加入工作台」即可。我會：<br>
+  ① 生成新課程的學習主頁（同樣五大功能）；② 在這本手帳註冊新課程便簽；<br>
+  ③ 新課程的錯題、弱項統計會自動匯入上面的「考前檢核表」。<br>
+  <span style="font-size:12px">技術備註：課程註冊表在本檔案 <code>COURSES</code> 陣列中，每科使用獨立的 localStorage 鍵，互不干擾。</span>
+</div>
+
+<p class="footer-note">所有練習記錄保存在本機瀏覽器（localStorage），關閉頁面不會丟失，適合考前長期累積。</p>
+
+<script>
+/* ============================================================
+   課程註冊表 —— 新增課程時，在此陣列加一筆即可
+   ============================================================ */
+const COURSES=[
+ {
+  id:"math",
+  name:"有理數",
+  ch:"代數 第二章 §2.7 加減混合・§2.8 乘法・§2.9 除法",
+  file:"有理數學習主頁.html",
+  wrongKey:"wb_math_wrong", statsKey:"wb_math_stats",
+  advice:{
+   "加減混合":"減法轉加法後，同號的數分別相加再合併（課本 P33-34）。",
+   "乘法法則":"先定符號（同正異負），再乘絕對值。",
+   "倒數":"整數寫成 n/1 再翻轉；帶分數先化假分數；0 沒有倒數。",
+   "除法法則":"a÷b = a×1/b：除號變乘號、除數變倒數必須同時進行。",
+   "分配律":"乘遍括號內每一項，符號逐項判斷。",
+   "易錯陷阱":"a÷(b+c) 不能拆！先算括號，再乘倒數。",
+   "運算順序":"乘除同級從左到右，逐步寫出結果。",
+   "符號判斷":"負因數偶數個→正，奇數個→負。",
+   "簡便運算":"見 25 找 4、見 125 找 8；同分母先結合。"
+  }
+ },
+ {
+  id:"geom",
+  name:"角的比較",
+  ch:"幾何 第一章 §1.5 角的比較・習題七（角平分線）",
+  file:"角的比較學習主頁.html",
+  wrongKey:"wb_geom_wrong", statsKey:"wb_geom_stats",
+  advice:{
+   "角的比較":"兩種方法：度量法、重疊法；角的大小只看開口，不看邊長。",
+   "角的加減":"先看圖確認射線在角的內部，再用「整體 − 部分」。",
+   "平角與內角和":"平角 180°、內角和 180°，看到共線就用平角。",
+   "角平分線概念":"角平分線是射線！五個等價式任寫一個即可判定。",
+   "角平分線計算":"正用求一半（½）、反用還原（×2）；雙平分線夾角 = 兩個半角相加。"
+  }
+ }
+ /* 新課程加在這裡 */
+];
+
+/* 便簽配色與傾角（依序循環） */
+const NOTE_STYLES=[
+ {tape:"var(--tape-yellow)", rot:"-1.2deg", trot:"-3deg"},
+ {tape:"var(--tape-pink)",   rot:"0.9deg",  trot:"2deg"},
+ {tape:"var(--tape-mint)",   rot:"-0.7deg", trot:"-2deg"},
+ {tape:"var(--tape-blue)",   rot:"1.1deg",  trot:"3deg"}
+];
+
+const readJSON=(k,f)=>JSON.parse(localStorage.getItem(k)||f);
+
+/* ---------- 檢核表打勾記錄 ---------- */
+const LS_CHECK="wb_desk_checks";
+const getChecks=()=>readJSON(LS_CHECK,"{}");
+const setChecks=o=>localStorage.setItem(LS_CHECK,JSON.stringify(o));
+
+/* ---------- Count-up ---------- */
+const reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function countUp(el, target, suffix, dur=900){
+  if(reduceMotion || target===0){ el.textContent=target+suffix; return; }
+  const t0=performance.now();
+  (function tick(t){
+    const p=Math.min((t-t0)/dur,1);
+    const eased=1-Math.pow(1-p,4);
+    el.textContent=Math.round(target*eased)+suffix;
+    if(p<1) requestAnimationFrame(tick);
+  })(t0);
+}
+
+/* ---------- 各課程統計 ---------- */
+function courseStats(c){
+  const wrong=readJSON(c.wrongKey,"[]");
+  const stats=readJSON(c.statsKey,"{}");
+  let r=0,w=0;
+  Object.values(stats).forEach(o=>{r+=o.r;w+=o.w;});
+  const total=r+w;
+  return {wrongCount:wrong.length, total, r, w, pct: total? Math.round(r/total*100):null, stats};
+}
+
+/* ---------- 總覽 ---------- */
+function renderOverview(){
+  let courses=COURSES.length, answered=0, right=0, wrongTotal=0;
+  COURSES.forEach(c=>{
+    const s=courseStats(c);
+    answered+=s.total; right+=s.r; wrongTotal+=s.wrongCount;
+  });
+  const pct= answered? Math.round(right/answered*100):0;
+  const row=document.getElementById("stat-row");
+  const items=[
+    {v:courses, s:"", l:"課程", c:"n-ink",   u:"var(--tape-blue)"},
+    {v:answered, s:"", l:"累計作答題數", c:"n-blue", u:"var(--tape-mint)"},
+    {v:answered? pct:null, s:"%", l:"整體對率", c:pct>=80?"n-green":pct>=50?"n-stamp":"n-stamp", u:"var(--tape-yellow)"},
+    {v:wrongTotal, s:"", l:"待重練錯題", c:wrongTotal?"n-stamp":"n-green", u:"var(--tape-pink)"}
+  ];
+  row.innerHTML=items.map((o,i)=>{
+    const disp= o.v===null? "—" : "0"+o.s;
+    return `<div class="stat" style="--i:${i};--uc:${o.u}"><div class="num ${o.c}" data-i="${i}">${disp}</div><div class="lbl">${o.l}</div></div>`;
+  }).join("");
+  items.forEach((o,i)=>{
+    if(o.v===null) return;
+    const el=row.querySelector(`.num[data-i="${i}"]`);
+    setTimeout(()=>countUp(el, o.v, o.s), 250 + i*150);
+  });
+}
+
+/* ---------- 課程便簽 ---------- */
+function renderCourses(){
+  const grid=document.getElementById("course-grid");
+  grid.innerHTML=COURSES.map((c,i)=>{
+    const s=courseStats(c);
+    const st=NOTE_STYLES[i % NOTE_STYLES.length];
+    const pctText= s.total? `${s.pct}%`:"未開始";
+    const pctColor= !s.total? "var(--ink-soft)": s.pct>=80?"#4a8a5c": s.pct>=50?"#b8862e":"var(--stamp)";
+    return `<div class="course" style="--i:${i};--rot:${st.rot};--tape:${st.tape};--tape-rot:${st.trot}">
+      <h3>${c.name}</h3>
+      <p class="ch">${c.ch}</p>
+      <div class="mini-stats">
+        <span>對率 <b style="color:${pctColor}">${pctText}</b></span>
+        <span>已答 <b>${s.total}</b> 題</span>
+        <span>錯題 <b style="color:${s.wrongCount?"var(--stamp)":"#4a8a5c"}">${s.wrongCount}</b> 題</span>
+      </div>
+      <div class="btns">
+        <a class="btn" href="${encodeURI(c.file)}">進入學習</a>
+        <a class="btn ghost" href="${encodeURI(c.file)}?tab=quiz">直接測驗</a>
+        <a class="btn wrong-link" href="${encodeURI(c.file)}?tab=wrong">錯題本${s.wrongCount?`（${s.wrongCount}）`:""}</a>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ---------- 考前檢核表 ---------- */
+function renderReview(){
+  const area=document.getElementById("review-area");
+  const checks=getChecks();
+  const weak=[];
+  COURSES.forEach(c=>{
+    const s=courseStats(c);
+    Object.entries(s.stats).forEach(([tag,o])=>{
+      const t=o.r+o.w, pct=Math.round(o.r/t*100);
+      if(pct<80) weak.push({cid:c.id, course:c.name, file:c.file, tag, pct, r:o.r, t});
+    });
+  });
+  weak.sort((a,b)=>a.pct-b.pct);
+  if(!weak.length){
+    const anyStats=COURSES.some(c=>courseStats(c).total>0);
+    area.innerHTML= anyStats
+      ? `<div class="all-good">🎉 所有已練習的知識點對率都在 80% 以上！考前只需快速過一遍錯題本即可。</div>`
+      : `<p class="empty-hint">還沒有練習記錄。先進入任一課程做「驗收練習」，這裡會自動生成你的考前檢核表。</p>`;
+    return;
+  }
+  area.innerHTML=weak.map((o,i)=>{
+    const c=COURSES.find(x=>x.id===o.cid);
+    const key=o.cid+"|"+o.tag;
+    const done=!!checks[key];
+    const stampCls= o.pct<50? "":"amber";
+    const stampTxt= o.pct<50? "重點攻克":"需要鞏固";
+    return `<div class="review-item ${done?"done":""}" data-key="${key}" style="--i:${i}">
+      <button class="check ${done?"on":""}" onclick="toggleCheck('${key}',this)" aria-label="標記已溫習"></button>
+      <div class="info">
+        <span class="course-name">${o.course}</span>
+        <div class="tag-name">${o.tag} <span class="pct">（${o.r}/${o.t} 對，${o.pct}%）</span></div>
+        <div class="advice">${c.advice[o.tag]||"重溫課本對應章節後重練。"}</div>
+      </div>
+      <span class="stamp ${stampCls}">${stampTxt}</span>
+      <a class="btn ghost" style="margin-top:4px" href="${encodeURI(o.file)}?tab=wrong">去重練</a>
+    </div>`;
+  }).join("");
+}
+
+function toggleCheck(key, btn){
+  const checks=getChecks();
+  checks[key]=!checks[key];
+  if(!checks[key]) delete checks[key];
+  setChecks(checks);
+  const item=btn.closest(".review-item");
+  btn.classList.toggle("on");
+  item.classList.toggle("done");
+}
+
+/* ---------- 匯出 / 匯入 ---------- */
+function dateStr(d){
+  const p=n=>String(n).padStart(2,"0");
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+}
+function downloadFile(name, content, mime){
+  const blob=new Blob([content],{type:(mime||"text/plain")+";charset=utf-8"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download=name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+
+/* 學習報告（Markdown）：總覽 + 各科對率表 + 弱項建議 + 錯題全文 */
+function exportMD(){
+  const now=new Date();
+  const ds=dateStr(now);
+  const p=n=>String(n).padStart(2,"0");
+  const tm=`${p(now.getHours())}:${p(now.getMinutes())}`;
+  let answered=0, right=0, wrongTotal=0;
+  const per=COURSES.map(c=>{
+    const s=courseStats(c);
+    answered+=s.total; right+=s.r; wrongTotal+=s.wrongCount;
+    return {c, s, wrong:readJSON(c.wrongKey,"[]")};
+  });
+  const pctAll= answered? Math.round(right/answered*100)+"%" : "—";
+
+  let md=`# 📝 學習報告（${ds}）\n\n> 由學習工作台自動生成 ・ 匯出時間 ${ds} ${tm}\n\n`;
+  md+=`## 📈 總覽\n\n- 課程數：${COURSES.length}\n- 累計作答：${answered} 題\n- 整體對率：${pctAll}\n- 待重練錯題：${wrongTotal} 題\n\n---\n`;
+
+  per.forEach(({c,s,wrong})=>{
+    md+=`\n## 📚 ${c.name}\n\n**章節：** ${c.ch}\n\n`;
+    if(!s.total){
+      md+=`尚未開始練習。\n`;
+    }else{
+      md+=`**對率：** ${s.pct}%（${s.r}/${s.total}）　**待重練錯題：** ${s.wrongCount} 題\n\n`;
+      md+=`### 知識點對率\n\n| 知識點 | 對/總 | 對率 | 狀態 |\n|---|---|---|---|\n`;
+      Object.entries(s.stats)
+        .map(([tag,o])=>({tag, r:o.r, t:o.r+o.w, pct:Math.round(o.r/(o.r+o.w)*100)}))
+        .sort((a,b)=>a.pct-b.pct)
+        .forEach(o=>{
+          const st= o.pct>=80? "✅ 穩固" : o.pct>=50? "🟡 需鞏固" : "🔴 重點攻克";
+          md+=`| ${o.tag} | ${o.r}/${o.t} | ${o.pct}% | ${st} |\n`;
+        });
+      const weak=Object.entries(s.stats)
+        .map(([tag,o])=>({tag,pct:Math.round(o.r/(o.r+o.w)*100)}))
+        .filter(o=>o.pct<80).sort((a,b)=>a.pct-b.pct);
+      if(weak.length){
+        md+=`\n### 🎯 溫習建議\n\n`;
+        weak.forEach(o=>{ md+=`- **${o.tag}**（${o.pct}%）：${c.advice[o.tag]||"重溫課本對應章節後重練。"}\n`; });
+      }
+    }
+    if(wrong.length){
+      md+=`\n### ❌ 錯題記錄（${wrong.length} 題）\n\n`;
+      wrong.forEach((e,i)=>{
+        if(typeof e==="number"){
+          md+=`${i+1}. （題目編號 ${e}，請到課程主頁錯題本查看）\n`;
+        }else{
+          md+=`${i+1}. **【${e.tag}】** ${e.q}\n   - 詳解：${e.ex}\n`;
+        }
+      });
+    }else if(s.total){
+      md+=`\n### ❌ 錯題記錄\n\n目前沒有錯題，太棒了！🎉\n`;
+    }
+    md+=`\n---\n`;
+  });
+
+  md+=`\n*下次匯出時，對比本次報告，看看弱項是否已消除。*\n`;
+  downloadFile(`學習報告_${ds}.md`, md, "text/markdown");
+}
+
+/* JSON 備份 / 匯入還原 */
+function exportJSON(){
+  const ds=dateStr(new Date());
+  const data={version:1, exportedAt:new Date().toISOString(), checks:getChecks(), courses:{}};
+  COURSES.forEach(c=>{
+    data.courses[c.id]={
+      wrongKey:c.wrongKey, statsKey:c.statsKey,
+      wrong:readJSON(c.wrongKey,"[]"), stats:readJSON(c.statsKey,"{}")
+    };
+  });
+  downloadFile(`學習記錄備份_${ds}.json`, JSON.stringify(data,null,2), "application/json");
+}
+function importJSON(file){
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      if(data.version!==1 || !data.courses) throw new Error("格式不符");
+      if(!confirm(`確定匯入 ${data.exportedAt? data.exportedAt.slice(0,10):""} 的備份？\n目前的練習記錄會被覆蓋。`)) return;
+      Object.values(data.courses).forEach(cc=>{
+        if(cc.wrongKey) localStorage.setItem(cc.wrongKey, JSON.stringify(cc.wrong||[]));
+        if(cc.statsKey) localStorage.setItem(cc.statsKey, JSON.stringify(cc.stats||{}));
+      });
+      if(data.checks) setChecks(data.checks);
+      renderOverview(); renderCourses(); renderReview();
+      alert("匯入成功！記錄已還原。");
+    }catch(e){
+      alert("匯入失敗：這不是有效的備份檔。");
+    }
+  };
+  reader.readAsText(file);
+}
+
+renderOverview();
+renderCourses();
+renderReview();
+</script>
+</body>
+</html>

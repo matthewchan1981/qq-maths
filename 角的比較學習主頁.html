@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>角的比較學習主頁 §1.5</title>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/ma-shan-zheng@5/index.css" rel="stylesheet">
+<style>
+:root{
+  /* 手帳紙感配色（與工作台一致） */
+  --paper:#f7f2e6; --paper-line:#e9e0cb;
+  --note:#fffdf4; --note-border:#e6dcc4;
+  --ink:#3b362c; --ink-soft:#8a8069;
+  --stamp:#c0574a; --blue:#3f6db3; --green:#4a8a5c; --amber:#b8862e;
+  --tape-pink:#f0b7c4; --tape-mint:#a9d6b6; --tape-yellow:#f3d788; --tape-blue:#a9c6e8;
+  --radius:6px;
+  --hand:"Ma Shan Zheng","Microsoft JhengHei",cursive;
+  --ease-quart:cubic-bezier(0.25,1,0.5,1);
+  --ease-quint:cubic-bezier(0.22,1,0.36,1);
+  --ease-expo:cubic-bezier(0.16,1,0.3,1);
+  --d-instant:120ms; --d-fast:220ms; --d-mid:380ms; --d-hero:640ms;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--paper);
+  background-image:repeating-linear-gradient(transparent 0 29px, var(--paper-line) 29px 30px);
+  color:var(--ink);
+  font-family:"Microsoft JhengHei","PingFang HK","PingFang TC",sans-serif;
+  font-size:16px;line-height:1.8;padding:24px 20px 40px;max-width:920px;margin:0 auto;
+}
+h1{font-family:var(--hand);font-size:42px;font-weight:400;letter-spacing:2px}
+.sub{color:var(--ink-soft);font-size:15px;margin-top:2px}
+
+/* ---------- 入場 ---------- */
+.hero{animation:hero-in var(--d-hero) var(--ease-expo) both}
+.hero h1 .wave{display:inline-block;animation:wave 900ms var(--ease-quart) .55s both;transform-origin:70% 70%}
+@keyframes hero-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes wave{
+  0%{transform:rotate(0)} 20%{transform:rotate(16deg)}
+  45%{transform:rotate(-10deg)} 70%{transform:rotate(8deg)}
+  100%{transform:rotate(0)}
+}
+
+/* ---------- 導航 ---------- */
+nav{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0;animation:hero-in var(--d-hero) var(--ease-expo) 120ms both}
+nav button{position:relative;background:transparent;color:var(--ink);border:1.5px solid var(--ink-soft);border-radius:999px;
+  padding:9px 20px;font-size:15px;cursor:pointer;font-family:inherit;
+  transition:transform var(--d-instant) var(--ease-quart),background var(--d-fast) var(--ease-quart),border-color var(--d-fast) var(--ease-quart),color var(--d-fast) var(--ease-quart)}
+nav button:hover{transform:translateY(-2px) rotate(-1deg);border-color:var(--blue)}
+nav button:active{transform:scale(.96)}
+nav button.active{background:var(--blue);border-color:var(--blue);color:#fdfaf0;font-weight:600}
+#wrong-badge{display:inline-block;color:var(--stamp);font-weight:700}
+#wrong-badge.pop{animation:pop 340ms var(--ease-quint)}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+
+/* ---------- 分頁與卡片（便簽） ---------- */
+section{display:none}
+section.on{display:block}
+section.on .card{animation:note-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*90ms)}
+@keyframes note-in{from{opacity:0;transform:rotate(var(--rot,0deg)) translateY(14px)}to{opacity:1;transform:rotate(var(--rot,0deg))}}
+
+.card{position:relative;background:var(--note);border:1px solid var(--note-border);border-radius:2px;
+  padding:24px 22px 20px;margin-bottom:18px;transform:rotate(var(--rot,0deg));
+  box-shadow:0 3px 10px rgba(80,66,40,.10), 0 1px 2px rgba(80,66,40,.08);
+  transition:transform var(--d-fast) var(--ease-quart),box-shadow var(--d-fast) var(--ease-quart)}
+.card:hover{transform:rotate(0deg) translateY(-3px);box-shadow:0 10px 22px rgba(80,66,40,.16), 0 2px 4px rgba(80,66,40,.08)}
+.card::before{content:"";position:absolute;top:-11px;left:50%;width:96px;height:24px;
+  transform:translateX(-50%) rotate(var(--tape-rot,-2deg));
+  background:var(--tape,var(--tape-yellow));opacity:.82;border-radius:2px;
+  box-shadow:0 1px 2px rgba(80,66,40,.12)}
+.card h3{font-family:var(--hand);font-size:23px;font-weight:400;letter-spacing:1px;margin-bottom:10px}
+
+/* 和紙標籤 */
+.tag{display:inline-block;font-family:var(--hand);font-size:16px;padding:1px 12px;border-radius:3px;margin-right:8px;transform:rotate(-2deg)}
+.t-hard{background:var(--tape-pink);color:#8a3343}
+.t-exam{background:var(--tape-mint);color:#2f6b45}
+.t-easy{background:var(--tape-yellow);color:#8a6413}
+
+ul{padding-left:22px} li{margin:6px 0;animation:li-in var(--d-mid) var(--ease-quint) both}
+section.on li{animation-delay:calc(var(--i,0)*90ms + var(--j,0)*45ms)}
+@keyframes li-in{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+mark{background:linear-gradient(transparent 45%, var(--tape-yellow) 45% 95%, transparent 95%);color:inherit;padding:0 2px}
+
+.formula{background:#f9f5e8;border-left:3px solid var(--blue);border-radius:4px;padding:12px 16px;margin:10px 0;font-size:16px}
+.formula b{color:var(--blue)}
+.warn{border-left:3px solid var(--stamp)}
+.warn b{color:var(--stamp)}
+.q-count{color:var(--ink-soft);font-size:14px}
+
+/* ---------- 測驗進度條 ---------- */
+.progress{height:8px;background:var(--paper-line);border-radius:99px;overflow:hidden;margin:14px 0 6px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--tape-blue),var(--tape-mint));border-radius:99px;transform-origin:left;
+  transition:transform var(--d-mid) var(--ease-expo);transform:scaleX(0)}
+
+/* ---------- 選項微互動 ---------- */
+.opt{position:relative;display:block;width:100%;text-align:left;background:#fbf8ee;border:1px solid var(--note-border);border-radius:4px;
+  padding:13px 18px;margin:9px 0;color:var(--ink);font-size:16.5px;cursor:pointer;font-family:inherit;
+  transition:transform var(--d-instant) var(--ease-quart),border-color var(--d-fast) var(--ease-quart),background var(--d-fast) var(--ease-quart),color var(--d-fast) var(--ease-quart);
+  animation:opt-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*60ms + 100ms)}
+@keyframes opt-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.opt:hover:not(:disabled){transform:translateX(6px);border-color:var(--blue)}
+.opt:active:not(:disabled){transform:translateX(6px) scale(.97)}
+.opt:disabled{cursor:default}
+.opt.right{background:#e9f2e4;border-color:var(--green);color:#33603f;animation:pulse-right 500ms var(--ease-quint)}
+.opt.wrong{background:#f9e9e5;border-color:var(--stamp);color:var(--stamp);animation:shake 420ms var(--ease-quart)}
+.opt.dim{opacity:.45}
+@keyframes pulse-right{
+  0%{transform:scale(1)} 35%{transform:scale(1.03);box-shadow:0 0 0 6px rgba(74,138,92,.16)}
+  100%{transform:scale(1);box-shadow:none}
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)}
+  40%{transform:translateX(7px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(3px)}
+}
+
+.explain{background:#eef3fa;border:1px solid #c8d6ea;border-radius:4px;padding:13px 17px;margin-top:12px;font-size:15px;display:none}
+.explain.on{display:block;animation:note-in var(--d-mid) var(--ease-quint)}
+.explain b{color:var(--amber)}
+
+/* ---------- 按鈕 ---------- */
+.btn{position:relative;background:var(--blue);color:#fdfaf0;border:none;border-radius:var(--radius);
+  padding:10px 24px;font-size:15px;font-weight:600;cursor:pointer;margin-top:14px;font-family:inherit;
+  transition:transform var(--d-instant) var(--ease-quart),filter var(--d-fast) var(--ease-quart)}
+.btn:hover{transform:translateY(-2px) rotate(-1deg);filter:brightness(1.06)}
+.btn:active{transform:scale(.95)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink-soft)}
+.btn.danger{background:transparent;color:var(--stamp);border:1.5px dashed var(--stamp)}
+.btn:focus-visible,.opt:focus-visible,nav button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+/* ---------- 成績揭曉 ---------- */
+.score-big{font-family:Georgia,"Times New Roman",serif;font-size:60px;font-weight:700;color:var(--blue);text-align:center;margin:12px 0;font-variant-numeric:tabular-nums}
+.score-pop{animation:score-pop 600ms var(--ease-quint)}
+@keyframes score-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+.result-msg{text-align:center;animation:note-in var(--d-mid) var(--ease-quint) 200ms both}
+.result-btns{text-align:center;animation:note-in var(--d-mid) var(--ease-quint) 320ms both}
+
+/* ---------- 彩帶 ---------- */
+.confetti{position:fixed;top:-12px;width:10px;height:16px;border-radius:2px;pointer-events:none;z-index:99;
+  animation:fall var(--fall-d,2400ms) var(--ease-quart) forwards}
+@keyframes fall{
+  0%{transform:translateY(0) rotate(0);opacity:1}
+  85%{opacity:1}
+  100%{transform:translateY(105vh) rotate(var(--spin,540deg));opacity:0}
+}
+
+/* ---------- 錯題本 ---------- */
+.wrong-item{border:1px dashed var(--note-border);border-radius:4px;padding:15px 18px;margin:12px 0;background:#fbf8ee;
+  transition:transform var(--d-fast) var(--ease-quart),border-color var(--d-fast) var(--ease-quart);
+  animation:note-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*70ms)}
+.wrong-item:hover{transform:translateX(4px);border-color:var(--stamp)}
+
+/* ---------- 分析條 ---------- */
+.bar-wrap{margin:12px 0;animation:note-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*60ms)}
+.bar-label{display:flex;justify-content:space-between;font-size:14.5px;margin-bottom:4px}
+.bar{height:11px;background:var(--paper-line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;transform-origin:left;animation:bar-grow 700ms var(--ease-expo) both;animation-delay:calc(var(--i,0)*60ms + 150ms)}
+@keyframes bar-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+.footer-note{color:var(--ink-soft);font-size:13.5px;text-align:center;margin-top:36px}
+.footer-note a{color:var(--blue);text-decoration:none}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
+  .confetti{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1><span class="wave">📐</span> 角的比較學習主頁</h1>
+  <p class="sub">幾何第一章 §1.5 角的比較 ・ 習題七（角平分線）｜ 澳門 S1 幾何</p>
+</div>
+
+<nav>
+  <button data-s="learn" class="active">學習重點</button>
+  <button data-s="formula">概念法則</button>
+  <button data-s="quiz">驗收練習</button>
+  <button data-s="wrong">錯題本 <span id="wrong-badge"></span></button>
+  <button data-s="analysis">弱項分析</button>
+</nav>
+
+<!-- ============ 1. 學習重點 ============ -->
+<section id="learn" class="on">
+  <div class="card" style="--i:0;--tape:var(--tape-mint);--rot:-0.8deg;--tape-rot:-3deg">
+    <h3><span class="tag t-exam">必考點</span>考試最愛出的五件事</h3>
+    <ul>
+      <li style="--j:0"><b>比較角大小的兩種方法</b>：度量法（量角器）與重疊法——和比較線段長短完全對應</li>
+      <li style="--j:1"><b>平角 = 180°</b>：看到「三點共線」或「平角」就要想到拆成兩角相加 180°</li>
+      <li style="--j:2"><b>角的加減</b>：整體角 = 各部分角之和，如 ∠BOE = ∠AOB − ∠AOE = 130° − 80° = 50°</li>
+      <li style="--j:3"><b>角平分線定義</b>：從頂點出發、把角分成兩個相等部分的<mark>射線</mark></li>
+      <li style="--j:4"><b>雙角平分線</b>：∠BOD = ∠BOC + ∠COD = ½∠AOC + ½∠COE = 40° + 25° = 65°</li>
+    </ul>
+  </div>
+  <div class="card" style="--i:1;--tape:var(--tape-yellow);--rot:0.7deg;--tape-rot:2deg">
+    <h3><span class="tag t-easy">易錯點</span>前人踩過的坑</h3>
+    <ul>
+      <li style="--j:0">角平分線是<mark>射線</mark>，不是直線，也不是線段（只有一個端點、向一方無限延伸）</li>
+      <li style="--j:1">比較角大小看<mark>開口大小</mark>，不是看邊畫得多長——邊長不影響角的大小</li>
+      <li style="--j:2">「平角」是一個角（有頂點、有兩邊），<mark>不等於一條直線</mark></li>
+      <li style="--j:3">用 ∠BOE = ∠AOB − ∠AOE 之前，<mark>先看圖確認 OE 在角的內部</mark>，位置關係錯了全題皆錯</li>
+      <li style="--j:4">五個等價式任寫一個就能判定角平分線，但要寫對字母順序：∠AOB = 2∠BOC ≠ ∠BOC = 2∠AOB</li>
+    </ul>
+  </div>
+  <div class="card" style="--i:2;--tape:var(--tape-pink);--rot:-0.6deg;--tape-rot:3deg">
+    <h3><span class="tag t-hard">難點</span>需要重點突破</h3>
+    <ul>
+      <li style="--j:0"><b>隱藏角挖掘</b>：圖中沒標的角度，靠「平角 180°」「三角形內角和 180°」推出來（如例2、例3）</li>
+      <li style="--j:1"><b>雙角平分線組合</b>：兩條平分線各切一半，夾角 = 兩個半角之和</li>
+      <li style="--j:2"><b>書寫推理過程</b>：每一步都要寫出依據（平角定義／角平分線定義／內角和），考試按步給分</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 2. 概念法則 ============ -->
+<section id="formula">
+  <div class="card" style="--i:0;--tape:var(--tape-blue);--rot:0.6deg;--tape-rot:-2deg">
+    <h3>角的比較</h3>
+    <div class="formula"><b>度量法</b>　用量角器量出角的度數再比較（如 ∠BOA = 30° &lt; ∠DOC = 58°）</div>
+    <div class="formula"><b>重疊法</b>　把一個角疊到另一個角上，頂點與一邊重合，看另一邊的位置</div>
+    <div class="formula warn"><b>注意</b>　角的大小只與開口有關，與邊的長短無關</div>
+  </div>
+  <div class="card" style="--i:1;--tape:var(--tape-mint);--rot:-0.7deg;--tape-rot:2deg">
+    <h3>常用角關係</h3>
+    <div class="formula"><b>平角</b>　= 180°（三點共線時可拆成兩角之和）</div>
+    <div class="formula"><b>直角</b>　= 90°　　<b>三角形內角和</b>　= 180°</div>
+    <div class="formula"><b>角的加減</b>　若 OE 在 ∠AOB 內部，則 ∠AOB = ∠AOE + ∠EOB</div>
+  </div>
+  <div class="card" style="--i:2;--tape:var(--tape-pink);--rot:0.8deg;--tape-rot:-3deg">
+    <h3>角平分線（五個等價表達式）</h3>
+    <div class="formula"><b>定義</b>　從角的頂點出發，把這個角分成兩個相等角的<b>射線</b>，叫做這個角的平分線</div>
+    <div class="formula">若 OC 是 ∠AOB 的平分線，則：<br>
+      ① ∠BOC = ∠COA　　② ∠AOB = 2∠BOC　　③ ∠AOB = 2∠COA<br>
+      ④ ∠BOC = ½∠AOB　　⑤ ∠COA = ½∠AOB</div>
+    <div class="formula warn"><b>判定</b>　反過來，具備 ①~⑤ 中任何一個式子，就能判定 OC 是 ∠AOB 的角平分線</div>
+  </div>
+</section>
+
+<!-- ============ 3. 驗收練習 ============ -->
+<section id="quiz">
+  <div class="card" id="quiz-box" style="--i:0;--tape:var(--tape-yellow);--rot:-0.5deg">
+    <div id="quiz-area"></div>
+  </div>
+</section>
+
+<!-- ============ 4. 錯題本 ============ -->
+<section id="wrong">
+  <div class="card" style="--i:0;--tape:var(--tape-pink);--rot:0.6deg">
+    <h3>📒 錯題本</h3>
+    <p class="q-count" id="wrong-summary"></p>
+    <div id="wrong-list"></div>
+    <button class="btn" id="btn-retry-all" style="display:none">全部重練</button>
+    <button class="btn danger" id="btn-clear-wrong" style="display:none">清空錯題本</button>
+  </div>
+</section>
+
+<!-- ============ 5. 弱項分析 ============ -->
+<section id="analysis">
+  <div class="card" style="--i:0;--tape:var(--tape-blue);--rot:-0.6deg">
+    <h3>📊 弱項分析（按知識點統計你的答對率）</h3>
+    <div id="analysis-area"></div>
+    <button class="btn danger" id="btn-reset-stats" style="margin-top:6px">清除全部練習記錄</button>
+  </div>
+</section>
+
+<p class="footer-note"><a href="學習工作台.html">← 返回學習工作台</a><br>練習記錄保存在本機瀏覽器（localStorage），重新打開頁面不會丟失。</p>
+
+<script>
+/* ---------- 題庫（對應課本 §1.5 角的比較 + 習題七） ---------- */
+const QUESTIONS = [
+ {id:1, tag:"角的比較", q:"比較兩個角的大小的方法有：", opts:["度量法和重疊法","觀察法和估計法","摺紙法和投影法","只有度量法一種"], ans:0,
+  ex:"課本 P16：比較角的大小用「度量法」（量角器）和「重疊法」，與比較線段長短的方法完全對應。"},
+ {id:2, tag:"角的比較", q:"已知 ∠AOB = 37°，∠CDE = 48°，則：", opts:["∠AOB > ∠CDE","∠AOB = ∠CDE","∠AOB < ∠CDE","無法比較"], ans:2,
+  ex:"習題七例1：37° < 48°，所以 ∠AOB < ∠CDE。"},
+ {id:3, tag:"角的比較", q:"比較角的大小時，角的大小與什麼有關？", opts:["邊的長短","開口的大小","邊的粗細","畫圖的方向"], ans:1,
+  ex:"角的大小只看兩邊張開的開口大小，邊畫長畫短都不影響。"},
+ {id:4, tag:"角的加減", q:"已知 OE 在 ∠AOB 內部，∠AOB = 130°，∠AOE = 80°，則 ∠BOE = ?", opts:["210°","50°","65°","30°"], ans:1,
+  ex:"習題七例2：∠BOE = ∠AOB − ∠AOE = 130° − 80° = 50°。整體角減部分角。"},
+ {id:5, tag:"平角與內角和", q:"一個平角的度數是：", opts:["90°","360°","120°","180°"], ans:3,
+  ex:"平角 = 180°；直角 = 90°；周角 = 360°。三個一起記。"},
+ {id:6, tag:"平角與內角和", q:"A、E、B 三點共線，∠AEO = 60°，則 ∠OEB = ?", opts:["60°","120°","30°","180°"], ans:1,
+  ex:"三點共線 → ∠AEB 是平角 180°，∠OEB = 180° − 60° = 120°（習題七例2）。"},
+ {id:7, tag:"平角與內角和", q:"三角形中 ∠A = ∠B = 25°，則第三個角 ∠BCA = ?", opts:["155°","25°","130°","50°"], ans:2,
+  ex:"三角形內角和 180°：∠BCA = 180° − 25° − 25° = 130°（習題七例3）。"},
+ {id:8, tag:"平角與內角和", q:"承上題，∠BCE 是一個平角，∠BCA = 130°，則 ∠ACE = ?", opts:["130°","60°","40°","50°"], ans:3,
+  ex:"∠ACE = ∠BCE − ∠BCA = 180° − 130° = 50°（習題七例3）。"},
+ {id:9, tag:"平角與內角和", q:"兩個角互補，其中一個角是 65°，另一個角是：", opts:["25°","115°","125°","65°"], ans:1,
+  ex:"互補 = 兩角之和 180°：180° − 65° = 115°。"},
+ {id:10, tag:"角平分線概念", q:"角的平分線是一條：", opts:["直線","線段","射線","以上皆非"], ans:2,
+  ex:"課本習題七（四）：角平分線從頂點出發、向一方無限延伸，是射線——不是直線，也不是線段。"},
+ {id:11, tag:"角平分線概念", q:"要判定 OC 是 ∠AOB 的角平分線，下列哪個式子成立即可？", opts:["∠AOC = ∠AOB","∠BOC = 2∠AOB","∠BOC = ½∠AOB","∠AOB = ∠BOC"], ans:2,
+  ex:"五個等價式之一：∠BOC = ½∠AOB（或 ∠AOB = 2∠BOC 等）。字母順序別寫反！"},
+ {id:12, tag:"角平分線計算", q:"OB 是 ∠AOC 的平分線，∠AOC = 80°，則 ∠BOC = ?", opts:["160°","40°","80°","20°"], ans:1,
+  ex:"∠BOC = ½∠AOC = ½ × 80° = 40°（習題七練習第1題）。"},
+ {id:13, tag:"角平分線計算", q:"OC 平分 ∠AOB，∠AOB = 90°，則 ∠AOC = ?", opts:["90°","30°","45°","60°"], ans:2,
+  ex:"∠AOC = ½∠AOB = 45°。平分直角得到 45°，很常考。"},
+ {id:14, tag:"角平分線計算", q:"OB 平分 ∠AOC，OD 平分 ∠COE。若 ∠AOC = 80°，∠COE = 50°，則 ∠BOD = ?", opts:["130°","65°","75°","40°"], ans:1,
+  ex:"∠BOD = ∠BOC + ∠COD = ½×80° + ½×50° = 40° + 25° = 65°（習題七練習第2題）。"},
+ {id:15, tag:"角平分線計算", q:"OC 是 ∠AOB 的平分線，∠BOC = 35°，則 ∠AOB = ?", opts:["35°","70°","17.5°","105°"], ans:1,
+  ex:"反向運用：∠AOB = 2∠BOC = 2 × 35° = 70°。平分線可以「乘 2 還原」。"}
+];
+
+const ADVICE = {
+ "角的比較":"記住兩種方法：度量法、重疊法；角的大小只看開口，不看邊長。",
+ "角的加減":"先看圖確認射線在角的內部，再用「整體 − 部分」求角。",
+ "平角與內角和":"平角 180°、內角和 180° 是挖掘隱藏角的兩把鑰匙，看到共線就用平角。",
+ "角平分線概念":"角平分線是射線！五個等價式任寫一個即可判定，注意字母順序。",
+ "角平分線計算":"正用求一半（½）、反用還原（×2）；雙平分線夾角 = 兩個半角相加。"
+};
+
+/* ---------- localStorage ---------- */
+const LS_WRONG="wb_geom_wrong", LS_STATS="wb_geom_stats";
+const getWrong=()=>JSON.parse(localStorage.getItem(LS_WRONG)||"[]");
+const setWrong=a=>localStorage.setItem(LS_WRONG,JSON.stringify(a));
+/* 錯題記錄升級：由只存 id 升級為存 {id,tag,q,ex}，方便工作台匯出學習報告 */
+function migrateWrong(){
+  const w=getWrong();
+  if(!w.some(x=>typeof x==="number")) return;
+  setWrong(w.map(x=>{
+    if(typeof x!=="number") return x;
+    const it=QUESTIONS.find(q=>q.id===x);
+    return it? {id:it.id,tag:it.tag,q:it.q,ex:it.ex} : null;
+  }).filter(Boolean));
+}
+const getStats=()=>JSON.parse(localStorage.getItem(LS_STATS)||"{}");
+const setStats=s=>localStorage.setItem(LS_STATS,JSON.stringify(s));
+
+function recordStat(tag, ok){
+  const s=getStats(); s[tag]=s[tag]||{r:0,w:0};
+  ok? s[tag].r++ : s[tag].w++; setStats(s);
+}
+
+/* ---------- 動效工具 ---------- */
+const reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function popBadge(){
+  const b=document.getElementById("wrong-badge");
+  b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop");
+}
+
+function confetti(){
+  if(reduceMotion) return;
+  const colors=["#a9c6e8","#a9d6b6","#f3d788","#f0b7c4","#c0574a"];
+  for(let i=0;i<36;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*100+"vw";
+    c.style.background=colors[i%colors.length];
+    c.style.setProperty("--fall-d",(1800+Math.random()*1600)+"ms");
+    c.style.setProperty("--spin",(360+Math.random()*540)+"deg");
+    c.style.animationDelay=(Math.random()*400)+"ms";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3800);
+  }
+}
+
+function countUp(el, target, suffix, dur=700){
+  if(reduceMotion){ el.textContent=target+suffix; return; }
+  const t0=performance.now();
+  (function tick(t){
+    const p=Math.min((t-t0)/dur,1);
+    const eased=1-Math.pow(1-p,4);
+    el.textContent=Math.round(target*eased)+suffix;
+    if(p<1) requestAnimationFrame(tick);
+  })(t0);
+}
+
+/* ---------- 分頁切換 ---------- */
+document.querySelectorAll("nav button").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    document.querySelectorAll("section").forEach(s=>s.classList.remove("on"));
+    document.getElementById(b.dataset.s).classList.add("on");
+    if(b.dataset.s==="wrong") renderWrong();
+    if(b.dataset.s==="analysis") renderAnalysis();
+    if(b.dataset.s==="quiz" && !quizState.started) renderQuizIntro();
+  };
+});
+
+/* ---------- 測驗 ---------- */
+let quizState={started:false};
+function renderQuizIntro(){
+  const area=document.getElementById("quiz-area");
+  area.innerHTML=`<h3>📝 驗收練習（共 ${QUESTIONS.length} 題）</h3>
+  <p class="q-count">涵蓋：角的比較・角的加減・平角與內角和・角平分線概念與計算。答錯的題會自動收入錯題本。</p>
+  <button class="btn" onclick="startQuiz(QUESTIONS)">開始測驗</button>`;
+  quizState.started=true;
+}
+
+function startQuiz(list){
+  quizState={started:true,list:[...list],idx:0,right:0,wrongIds:[]};
+  renderQ();
+}
+
+function renderQ(){
+  const {list,idx}=quizState;
+  const item=list[idx];
+  const area=document.getElementById("quiz-area");
+  area.innerHTML=`<p class="q-count">第 ${idx+1} / ${list.length} 題　<span class="tag t-exam">${item.tag}</span></p>
+  <div class="progress"><i id="pbar"></i></div>
+  <h3 style="margin:10px 0;font-size:20px">${item.q}</h3>
+  <div id="opts">${item.opts.map((o,i)=>`<button class="opt" style="--i:${i}" onclick="answer(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}</div>
+  <div class="explain" id="explain"></div>
+  <div id="next-slot"></div>`;
+  requestAnimationFrame(()=>{
+    const bar=document.getElementById("pbar");
+    if(bar) bar.style.transform=`scaleX(${idx/list.length})`;
+  });
+}
+
+function answer(i){
+  const {list,idx}=quizState, item=list[idx];
+  const btns=document.querySelectorAll("#opts .opt");
+  btns.forEach((b,j)=>{ b.disabled=true;
+    if(j===item.ans) b.classList.add("right");
+    else if(j===i) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+  const ok=(i===item.ans);
+  recordStat(item.tag, ok);
+  const w=getWrong();
+  const has=w.some(x=>(typeof x==="number"? x : x.id)===item.id);
+  if(!ok && !has){ w.push({id:item.id,tag:item.tag,q:item.q,ex:item.ex}); setWrong(w); popBadge(); }
+  if(ok && has){ setWrong(w.filter(x=>(typeof x==="number"? x : x.id)!==item.id)); }
+  ok? quizState.right++ : quizState.wrongIds.push(item.id);
+  const ex=document.getElementById("explain");
+  ex.innerHTML=(ok? "✅ <b>答對了！</b> " : "❌ <b>答錯了</b>，已收入錯題本。 ")+item.ex;
+  ex.classList.add("on");
+  const bar=document.getElementById("pbar");
+  if(bar) bar.style.transform=`scaleX(${(idx+1)/list.length})`;
+  const slot=document.getElementById("next-slot");
+  if(quizState.idx+1 < list.length){
+    slot.innerHTML=`<button class="btn" onclick="nextQ()">下一題</button>`;
+  }else{
+    slot.innerHTML=`<button class="btn" onclick="renderResult()">查看成績</button>`;
+  }
+  updateBadge();
+}
+function nextQ(){ quizState.idx++; renderQ(); }
+
+function renderResult(){
+  const total=quizState.list.length, r=quizState.right;
+  const pct=Math.round(r/total*100);
+  let msg;
+  if(pct>=85) msg="🎉 優秀！角的比較掌握得很好，可以預習下一節了。";
+  else if(pct>=60) msg="👍 不錯！把錯題本裡的題重練一遍就穩了。";
+  else msg="💪 先回「學習重點」重溫概念，再重練錯題。";
+  document.getElementById("quiz-area").innerHTML=`
+    <h3>測驗完成！</h3>
+    <div class="score-big score-pop"><span id="score-n"></span></div>
+    <p class="result-msg">${msg}</p>
+    <div class="result-btns">
+      <button class="btn" onclick="startQuiz(QUESTIONS)">再測一次</button>
+      <button class="btn ghost" onclick="goWrong()">去錯題本重練</button>
+    </div>`;
+  const sn=document.getElementById("score-n");
+  countUp(sn, r, " / "+total);
+  if(pct>=85) confetti();
+}
+
+function goWrong(){
+  document.querySelector('nav button[data-s="wrong"]').click();
+}
+
+/* ---------- 錯題本 ---------- */
+function updateBadge(){
+  const n=getWrong().length;
+  document.getElementById("wrong-badge").textContent = n? `(${n})` : "";
+}
+
+function renderWrong(){
+  const ids=getWrong();
+  const list=document.getElementById("wrong-list");
+  const sum=document.getElementById("wrong-summary");
+  if(!ids.length){
+    sum.textContent="目前沒有錯題，太棒了！去做「驗收練習」試試。";
+    list.innerHTML="";
+    document.getElementById("btn-retry-all").style.display="none";
+    document.getElementById("btn-clear-wrong").style.display="none";
+    return;
+  }
+  sum.textContent=`共 ${ids.length} 道錯題。重練答對後會自動從錯題本移除。`;
+  list.innerHTML=ids.map((e,i)=>{
+    const item= typeof e==="number"? QUESTIONS.find(q=>q.id===e) : e;
+    return `<div class="wrong-item" style="--i:${i}">
+      <p class="q-count"><span class="tag t-hard">${item.tag}</span></p>
+      <p style="margin:6px 0">${item.q}</p>
+      <button class="btn ghost" style="margin-top:4px;padding:6px 16px" onclick="startQuiz([QUESTIONS.find(q=>q.id===${item.id})])">重練這題</button>
+    </div>`;
+  }).join("");
+  document.getElementById("btn-retry-all").style.display="inline-block";
+  document.getElementById("btn-clear-wrong").style.display="inline-block";
+}
+
+document.getElementById("btn-retry-all").onclick=()=>{
+  const list=getWrong().map(e=>QUESTIONS.find(q=>q.id===(typeof e==="number"? e : e.id)));
+  document.querySelector('nav button[data-s="quiz"]').click();
+  startQuiz(list);
+};
+document.getElementById("btn-clear-wrong").onclick=()=>{
+  if(confirm("確定要清空錯題本嗎？")){ setWrong([]); renderWrong(); updateBadge(); }
+};
+
+/* ---------- 弱項分析 ---------- */
+function renderAnalysis(){
+  const s=getStats();
+  const area=document.getElementById("analysis-area");
+  const tags=Object.keys(s);
+  if(!tags.length){
+    area.innerHTML=`<p class="q-count">還沒有練習記錄。先去做「驗收練習」，我再幫你分析弱項！</p>`;
+    return;
+  }
+  const rows=tags.map(t=>{
+    const {r,w}=s[t], total=r+w, pct=Math.round(r/total*100);
+    return {t,r,w,total,pct};
+  }).sort((a,b)=>a.pct-b.pct);
+  area.innerHTML=rows.map((o,i)=>{
+    const color=o.pct>=80?"var(--green)":o.pct>=50?"var(--amber)":"var(--stamp)";
+    return `<div class="bar-wrap" style="--i:${i}">
+      <div class="bar-label"><span>${o.t}</span><span>${o.r}/${o.total} 對（${o.pct}%）</span></div>
+      <div class="bar"><i style="--i:${i};background:${color};width:${o.pct}%"></i></div>
+    </div>`;
+  }).join("")+
+  `<h3 style="margin-top:18px">🎯 你的弱項與建議</h3>`+
+  rows.slice(0,3).filter(o=>o.pct<100).map(o=>
+    `<div class="formula warn" style="margin-top:8px"><b>${o.t}（對率 ${o.pct}%）</b>　${ADVICE[o.t]||""}</div>`
+  ).join("") +
+  (rows.every(o=>o.pct===100) ? `<div class="formula" style="margin-top:8px">全部知識點 100% 正確，本節已完全掌握！🎉</div>` : "");
+}
+document.getElementById("btn-reset-stats").onclick=()=>{
+  if(confirm("確定清除全部練習記錄？錯題本也會一併清空。")){
+    localStorage.removeItem(LS_STATS); localStorage.removeItem(LS_WRONG);
+    renderAnalysis(); updateBadge();
+  }
+};
+
+/* ---------- 初始化 ---------- */
+migrateWrong();
+renderQuizIntro();
+updateBadge();
+/* 支援工作台深層連結：?tab=wrong / analysis / quiz / formula */
+const urlTab=new URLSearchParams(location.search).get("tab");
+if(urlTab){ const b=document.querySelector(`nav button[data-s="${urlTab}"]`); if(b) b.click(); }
+</script>
+</body>
+</html>
