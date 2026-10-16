@@ -344,15 +344,21 @@ const ADVICE = {
 const LS_WRONG="wb_math_wrong", LS_STATS="wb_math_stats";
 const getWrong=()=>JSON.parse(localStorage.getItem(LS_WRONG)||"[]");
 const setWrong=a=>localStorage.setItem(LS_WRONG,JSON.stringify(a));
-/* 錯題記錄升級：由只存 id 升級為存 {id,tag,q,ex}，方便工作台匯出學習報告 */
+/* 錯題記錄升級：由只存 id 升級為存 {id,tag,q,ex,wrong,right}；錯題永久保留並記錄次數 */
 function migrateWrong(){
   const w=getWrong();
-  if(!w.some(x=>typeof x==="number")) return;
-  setWrong(w.map(x=>{
-    if(typeof x!=="number") return x;
-    const it=QUESTIONS.find(q=>q.id===x);
-    return it? {id:it.id,tag:it.tag,q:it.q,ex:it.ex} : null;
-  }).filter(Boolean));
+  let changed=false;
+  const nw=w.map(x=>{
+    if(typeof x==="number"){
+      changed=true;
+      const it=QUESTIONS.find(q=>q.id===x);
+      return it? {id:it.id,tag:it.tag,q:it.q,ex:it.ex,wrong:1,right:0} : null;
+    }
+    if(x.wrong===undefined){ x.wrong=1; changed=true; }
+    if(x.right===undefined){ x.right=0; changed=true; }
+    return x;
+  }).filter(Boolean);
+  if(changed) setWrong(nw);
 }
 const getStats=()=>JSON.parse(localStorage.getItem(LS_STATS)||"{}");
 const setStats=s=>localStorage.setItem(LS_STATS,JSON.stringify(s));
@@ -452,9 +458,14 @@ function answer(i){
   const ok=(i===item.ans);
   recordStat(item.tag, ok);
   const w=getWrong();
-  const has=w.some(x=>(typeof x==="number"? x : x.id)===item.id);
-  if(!ok && !has){ w.push({id:item.id,tag:item.tag,q:item.q,ex:item.ex}); setWrong(w); popBadge(); }
-  if(ok && has){ setWrong(w.filter(x=>(typeof x==="number"? x : x.id)!==item.id)); }
+  const ix=w.findIndex(x=>(typeof x==="number"? x : x.id)===item.id);
+  if(!ok){
+    if(ix<0){ w.push({id:item.id,tag:item.tag,q:item.q,ex:item.ex,wrong:1,right:0}); }
+    else if(typeof w[ix]!=="number"){ w[ix].wrong=(w[ix].wrong||0)+1; }
+    setWrong(w); popBadge();
+  }else if(ix>=0 && typeof w[ix]!=="number"){
+    w[ix].right=(w[ix].right||0)+1; setWrong(w);
+  }
   ok? quizState.right++ : quizState.wrongIds.push(item.id);
   const ex=document.getElementById("explain");
   ex.innerHTML=(ok? "✅ <b>答對了！</b> " : "❌ <b>答錯了</b>，已收入錯題本。 ")+item.ex;
@@ -512,11 +523,15 @@ function renderWrong(){
     document.getElementById("btn-clear-wrong").style.display="none";
     return;
   }
-  sum.textContent=`共 ${ids.length} 道錯題。重練答對後會自動從錯題本移除。`;
-  list.innerHTML=ids.map((e,i)=>{
+  const mastered=ids.filter(e=>typeof e!=="number" && (e.right||0)>=2).length;
+  sum.textContent=`共 ${ids.length} 道錯題，已掌握 ${mastered} 道。錯題永久保留，重練會記錄次數。`;
+  const rank=e=> typeof e==="number"? 0 : (e.right||0)>=2? 2 : (e.right||0)>=1? 1 : 0;
+  list.innerHTML=[...ids].sort((a,b)=>rank(a)-rank(b)).map((e,i)=>{
     const item= typeof e==="number"? QUESTIONS.find(q=>q.id===e) : e;
+    const wn=item.wrong||0, rn=item.right||0;
+    const st= rn>=2? {t:"已掌握",c:"t-exam"} : rn>=1? {t:"有進步",c:"t-easy"} : {t:"待重練",c:"t-hard"};
     return `<div class="wrong-item" style="--i:${i}">
-      <p class="q-count"><span class="tag t-hard">${item.tag}</span></p>
+      <p class="q-count"><span class="tag ${st.c}">${st.t}</span><span class="tag t-hard">${item.tag}</span>錯 ${wn} 次 ・ 重練答對 ${rn} 次</p>
       <p style="margin:6px 0">${item.q}</p>
       <button class="btn ghost" style="margin-top:4px;padding:6px 16px" onclick="startQuiz([QUESTIONS.find(q=>q.id===${item.id})])">重練這題</button>
     </div>`;
