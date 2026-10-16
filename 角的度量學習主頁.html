@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>角的度量學習主頁 §1.6</title>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/ma-shan-zheng@5/index.css" rel="stylesheet">
+<style>
+:root{
+  /* 手帳紙感配色（與工作台一致） */
+  --paper:#f7f2e6; --paper-line:#e9e0cb;
+  --note:#fffdf4; --note-border:#e6dcc4;
+  --ink:#3b362c; --ink-soft:#8a8069;
+  --stamp:#c0574a; --blue:#3f6db3; --green:#4a8a5c; --amber:#b8862e;
+  --tape-pink:#f0b7c4; --tape-mint:#a9d6b6; --tape-yellow:#f3d788; --tape-blue:#a9c6e8;
+  --radius:6px;
+  --hand:"Ma Shan Zheng","Microsoft JhengHei",cursive;
+  --ease-quart:cubic-bezier(0.25,1,0.5,1);
+  --ease-quint:cubic-bezier(0.22,1,0.36,1);
+  --ease-expo:cubic-bezier(0.16,1,0.3,1);
+  --d-instant:120ms; --d-fast:220ms; --d-mid:380ms; --d-hero:640ms;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--paper);
+  background-image:repeating-linear-gradient(transparent 0 29px, var(--paper-line) 29px 30px);
+  color:var(--ink);
+  font-family:"Microsoft JhengHei","PingFang HK","PingFang TC",sans-serif;
+  font-size:16px;line-height:1.8;padding:24px 20px 40px;max-width:920px;margin:0 auto;
+}
+h1{font-family:var(--hand);font-size:42px;font-weight:400;letter-spacing:2px}
+.sub{color:var(--ink-soft);font-size:15px;margin-top:2px}
+
+.hero{animation:hero-in var(--d-hero) var(--ease-expo) both}
+.hero h1 .wave{display:inline-block;animation:wave 900ms var(--ease-quart) .55s both;transform-origin:70% 70%}
+@keyframes hero-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes wave{
+  0%{transform:rotate(0)} 20%{transform:rotate(16deg)}
+  45%{transform:rotate(-10deg)} 70%{transform:rotate(8deg)}
+  100%{transform:rotate(0)}
+}
+
+nav{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0;animation:hero-in var(--d-hero) var(--ease-expo) 120ms both}
+nav button{position:relative;background:transparent;color:var(--ink);border:1.5px solid var(--ink-soft);border-radius:999px;
+  padding:9px 20px;font-size:15px;cursor:pointer;font-family:inherit;
+  transition:transform var(--d-instant) var(--ease-quart),background var(--d-fast) var(--ease-quart),border-color var(--d-fast) var(--ease-quart),color var(--d-fast) var(--ease-quart)}
+nav button:hover{transform:translateY(-2px) rotate(-1deg);border-color:var(--blue)}
+nav button:active{transform:scale(.96)}
+nav button.active{background:var(--blue);border-color:var(--blue);color:#fdfaf0;font-weight:600}
+#wrong-badge{display:inline-block;color:var(--stamp);font-weight:700}
+#wrong-badge.pop{animation:pop 340ms var(--ease-quint)}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+
+section{display:none}
+section.on{display:block}
+section.on .card{animation:note-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*90ms)}
+@keyframes note-in{from{opacity:0;transform:rotate(var(--rot,0deg)) translateY(14px)}to{opacity:1;transform:rotate(var(--rot,0deg))}}
+
+.card{position:relative;background:var(--note);border:1px solid var(--note-border);border-radius:2px;
+  padding:24px 22px 20px;margin-bottom:18px;transform:rotate(var(--rot,0deg));
+  box-shadow:0 3px 10px rgba(80,66,40,.10), 0 1px 2px rgba(80,66,40,.08);
+  transition:transform var(--d-fast) var(--ease-quart),box-shadow var(--d-fast) var(--ease-quart)}
+.card:hover{transform:rotate(0deg) translateY(-3px);box-shadow:0 10px 22px rgba(80,66,40,.16), 0 2px 4px rgba(80,66,40,.08)}
+.card::before{content:"";position:absolute;top:-11px;left:50%;width:96px;height:24px;
+  transform:translateX(-50%) rotate(var(--tape-rot,-2deg));
+  background:var(--tape,var(--tape-yellow));opacity:.82;border-radius:2px;
+  box-shadow:0 1px 2px rgba(80,66,40,.12)}
+.card h3{font-family:var(--hand);font-size:23px;font-weight:400;letter-spacing:1px;margin-bottom:10px}
+
+.tag{display:inline-block;font-family:var(--hand);font-size:16px;padding:1px 12px;border-radius:3px;margin-right:8px;transform:rotate(-2deg)}
+.t-hard{background:var(--tape-pink);color:#8a3343}
+.t-exam{background:var(--tape-mint);color:#2f6b45}
+.t-easy{background:var(--tape-yellow);color:#8a6413}
+
+ul{padding-left:22px} li{margin:6px 0;animation:li-in var(--d-mid) var(--ease-quint) both}
+section.on li{animation-delay:calc(var(--i,0)*90ms + var(--j,0)*45ms)}
+@keyframes li-in{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+mark{background:linear-gradient(transparent 45%, var(--tape-yellow) 45% 95%, transparent 95%);color:inherit;padding:0 2px}
+
+.formula{background:#f9f5e8;border-left:3px solid var(--blue);border-radius:4px;padding:12px 16px;margin:10px 0;font-size:16px}
+.formula b{color:var(--blue)}
+.warn{border-left:3px solid var(--stamp)}
+.warn b{color:var(--stamp)}
+.q-count{color:var(--ink-soft);font-size:14px}
+
+.progress{height:8px;background:var(--paper-line);border-radius:99px;overflow:hidden;margin:14px 0 6px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--tape-blue),var(--tape-mint));border-radius:99px;transform-origin:left;
+  transition:transform var(--d-mid) var(--ease-expo);transform:scaleX(0)}
+
+.opt{position:relative;display:block;width:100%;text-align:left;background:#fbf8ee;border:1px solid var(--note-border);border-radius:4px;
+  padding:13px 18px;margin:9px 0;color:var(--ink);font-size:16.5px;cursor:pointer;font-family:inherit;
+  transition:transform var(--d-instant) var(--ease-quart),border-color var(--d-fast) var(--ease-quart),background var(--d-fast) var(--ease-quart),color var(--d-fast) var(--ease-quart);
+  animation:opt-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*60ms + 100ms)}
+@keyframes opt-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.opt:hover:not(:disabled){transform:translateX(6px);border-color:var(--blue)}
+.opt:active:not(:disabled){transform:translateX(6px) scale(.97)}
+.opt:disabled{cursor:default}
+.opt.right{background:#e9f2e4;border-color:var(--green);color:#33603f;animation:pulse-right 500ms var(--ease-quint)}
+.opt.wrong{background:#f9e9e5;border-color:var(--stamp);color:var(--stamp);animation:shake 420ms var(--ease-quart)}
+.opt.dim{opacity:.45}
+@keyframes pulse-right{
+  0%{transform:scale(1)} 35%{transform:scale(1.03);box-shadow:0 0 0 6px rgba(74,138,92,.16)}
+  100%{transform:scale(1);box-shadow:none}
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)}
+  40%{transform:translateX(7px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(3px)}
+}
+
+.explain{background:#eef3fa;border:1px solid #c8d6ea;border-radius:4px;padding:13px 17px;margin-top:12px;font-size:15px;display:none}
+.explain.on{display:block;animation:note-in var(--d-mid) var(--ease-quint)}
+.explain b{color:var(--amber)}
+
+.btn{position:relative;background:var(--blue);color:#fdfaf0;border:none;border-radius:var(--radius);
+  padding:10px 24px;font-size:15px;font-weight:600;cursor:pointer;margin-top:14px;font-family:inherit;
+  transition:transform var(--d-instant) var(--ease-quart),filter var(--d-fast) var(--ease-quart)}
+.btn:hover{transform:translateY(-2px) rotate(-1deg);filter:brightness(1.06)}
+.btn:active{transform:scale(.95)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink-soft)}
+.btn.danger{background:transparent;color:var(--stamp);border:1.5px dashed var(--stamp)}
+.btn:focus-visible,.opt:focus-visible,nav button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+.score-big{font-family:Georgia,"Times New Roman",serif;font-size:60px;font-weight:700;color:var(--blue);text-align:center;margin:12px 0;font-variant-numeric:tabular-nums}
+.score-pop{animation:score-pop 600ms var(--ease-quint)}
+@keyframes score-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+.result-msg{text-align:center;animation:note-in var(--d-mid) var(--ease-quint) 200ms both}
+.result-btns{text-align:center;animation:note-in var(--d-mid) var(--ease-quint) 320ms both}
+
+.confetti{position:fixed;top:-12px;width:10px;height:16px;border-radius:2px;pointer-events:none;z-index:99;
+  animation:fall var(--fall-d,2400ms) var(--ease-quart) forwards}
+@keyframes fall{
+  0%{transform:translateY(0) rotate(0);opacity:1}
+  85%{opacity:1}
+  100%{transform:translateY(105vh) rotate(var(--spin,540deg));opacity:0}
+}
+
+.wrong-item{border:1px dashed var(--note-border);border-radius:4px;padding:15px 18px;margin:12px 0;background:#fbf8ee;
+  transition:transform var(--d-fast) var(--ease-quart),border-color var(--d-fast) var(--ease-quart);
+  animation:note-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*70ms)}
+.wrong-item:hover{transform:translateX(4px);border-color:var(--stamp)}
+
+.bar-wrap{margin:12px 0;animation:note-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*60ms)}
+.bar-label{display:flex;justify-content:space-between;font-size:14.5px;margin-bottom:4px}
+.bar{height:11px;background:var(--paper-line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;transform-origin:left;animation:bar-grow 700ms var(--ease-expo) both;animation-delay:calc(var(--i,0)*60ms + 150ms)}
+@keyframes bar-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+.footer-note{color:var(--ink-soft);font-size:13.5px;text-align:center;margin-top:36px}
+.footer-note a{color:var(--blue);text-decoration:none}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
+  .confetti{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1><span class="wave">📐</span> 角的度量學習主頁</h1>
+  <p class="sub">幾何第一章 §1.6 角的度量(一)(二) ・ 習題八、九 ｜ 澳門 S1 幾何</p>
+</div>
+
+<nav>
+  <button data-s="learn" class="active">學習重點</button>
+  <button data-s="formula">概念法則</button>
+  <button data-s="quiz">驗收練習</button>
+  <button data-s="wrong">錯題本 <span id="wrong-badge"></span></button>
+  <button data-s="analysis">弱項分析</button>
+</nav>
+
+<!-- ============ 1. 學習重點 ============ -->
+<section id="learn" class="on">
+  <div class="card" style="--i:0;--tape:var(--tape-mint);--rot:-0.8deg;--tape-rot:-3deg">
+    <h3><span class="tag t-exam">必考點</span>考試最愛出的五件事</h3>
+    <ul>
+      <li style="--j:0"><b>60 進位制</b>：1° = 60′，1′ = 60″，1° = 3600″（與時間換算完全一樣）</li>
+      <li style="--j:1"><b>度分秒互化</b>：大化小 ×60，小化大 ÷60（如 3.6° = 3°36′、57°18′ = 57.3°）</li>
+      <li style="--j:2"><b>度分秒四則運算</b>：加法滿 60 進 1，減法不夠<mark>借 1 當 60</mark>，乘法逐位乘再進位，除法逐級分</li>
+      <li style="--j:3"><b>互餘與互補</b>：和為 90° 互餘、和為 180° 互補；∠α 的餘角 = 90°−∠α，補角 = 180°−∠α</li>
+      <li style="--j:4"><b>角的分類界線</b>：銳角 &lt; 90° &lt; 鈍角 &lt; 180°（平角）；直角 = 90°；周角 = 360°</li>
+    </ul>
+  </div>
+  <div class="card" style="--i:1;--tape:var(--tape-yellow);--rot:0.7deg;--tape-rot:2deg">
+    <h3><span class="tag t-easy">易錯點</span>這次練習中真實出現的錯誤</h3>
+    <ul>
+      <li style="--j:0">180° − 53°17′ <mark>不是 127°</mark>！要借位：179°60′ − 53°17′ = <b>126°43′</b>（「分」不能丟）</li>
+      <li style="--j:1">90° − 60°32′ <mark>不是 30°</mark>！借位：89°60′ − 60°32′ = <b>29°28′</b></li>
+      <li style="--j:2">加法滿 60′ 要進 1°：48°39′ + 67°21′ = 115°60′ = <b>116°</b>（不是 115°）</li>
+      <li style="--j:3">除法要<mark>逐級分</mark>：46°58′25″÷5，餘 1° 化 60′ 加進去再除，答案 9°23′41″（不能寫 9.2°）</li>
+      <li style="--j:4"><mark>89° 是銳角</mark>，不是鈍角！界線：小於 90° 就是銳角</li>
+      <li style="--j:5">「餘角」「補角」要說清是<mark>誰的</mark>餘角／補角，不能只說「30° 是餘角」</li>
+    </ul>
+  </div>
+  <div class="card" style="--i:2;--tape:var(--tape-pink);--rot:-0.6deg;--tape-rot:3deg">
+    <h3><span class="tag t-hard">難點</span>需要重點突破</h3>
+    <ul>
+      <li style="--j:0"><b>帶度分秒的互餘互補</b>：先借位再減，例如 ∠α = 60°32′ 的補角 = 180°−60°32′ = 119°28′</li>
+      <li style="--j:1"><b>度分秒除法</b>：度→分→秒逐級分配，每級的餘數 ×60 併入下一級</li>
+      <li style="--j:2"><b>餘補性質推理</b>：同角（等角）的餘角相等、補角相等——證明題第一步常用</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 2. 概念法則 ============ -->
+<section id="formula">
+  <div class="card" style="--i:0;--tape:var(--tape-blue);--rot:0.6deg;--tape-rot:-2deg">
+    <h3>角的度量單位（60 進位制）</h3>
+    <div class="formula"><b>1° 的定義</b>　把一個平角分成 180 等分，每一份就是 1°</div>
+    <div class="formula"><b>基本角</b>　平角 = 180°　直角 = 90°　周角 = 360°（= 2 平角 = 4 直角）</div>
+    <div class="formula"><b>換算</b>　1° = 60′　1′ = 60″　1° = 3600″<br>1′ = 1/60°　1″ = 1/60′</div>
+    <div class="formula"><b>互化口訣</b>　大單位化小單位 ×60；小單位化大單位 ÷60</div>
+  </div>
+  <div class="card" style="--i:1;--tape:var(--tape-mint);--rot:-0.7deg;--tape-rot:2deg">
+    <h3>度分秒四則運算</h3>
+    <div class="formula"><b>加法</b>　度分秒分別加，滿 60″ 進 1′，滿 60′ 進 1°</div>
+    <div class="formula warn"><b>減法</b>　不夠減就借：借 1° 當 60′，借 1′ 當 60″（90° = 89°60′ = 89°59′60″）</div>
+    <div class="formula"><b>乘法</b>　度分秒分別乘，再按 60 進位整理</div>
+    <div class="formula"><b>除法</b>　從度開始逐級除，餘數 ×60 併入下一級繼續除</div>
+  </div>
+  <div class="card" style="--i:2;--tape:var(--tape-pink);--rot:0.8deg;--tape-rot:-3deg">
+    <h3>互餘・互補・角的分類</h3>
+    <div class="formula"><b>互餘</b>　∠1+∠2 = 90°（直角）⇔ 兩角互餘；∠α 的餘角 = 90° − ∠α</div>
+    <div class="formula"><b>互補</b>　∠1+∠2 = 180°（平角）⇔ 兩角互補；∠α 的補角 = 180° − ∠α</div>
+    <div class="formula"><b>性質</b>　同角（等角）的餘角相等；同角（等角）的補角相等</div>
+    <div class="formula warn"><b>分類界線</b>　銳角 &lt; 90°；直角 = 90°；90° &lt; 鈍角 &lt; 180°；平角 = 180°</div>
+  </div>
+</section>
+
+<!-- ============ 3. 驗收練習 ============ -->
+<section id="quiz">
+  <div class="card" id="quiz-box" style="--i:0;--tape:var(--tape-yellow);--rot:-0.5deg">
+    <div id="quiz-area"></div>
+  </div>
+</section>
+
+<!-- ============ 4. 錯題本 ============ -->
+<section id="wrong">
+  <div class="card" style="--i:0;--tape:var(--tape-pink);--rot:0.6deg">
+    <h3>📒 錯題本</h3>
+    <p class="q-count" id="wrong-summary"></p>
+    <div id="wrong-list"></div>
+    <button class="btn" id="btn-retry-all" style="display:none">全部重練</button>
+    <button class="btn danger" id="btn-clear-wrong" style="display:none">清空錯題本</button>
+  </div>
+</section>
+
+<!-- ============ 5. 弱項分析 ============ -->
+<section id="analysis">
+  <div class="card" style="--i:0;--tape:var(--tape-blue);--rot:-0.6deg">
+    <h3>📊 弱項分析（按知識點統計你的答對率）</h3>
+    <div id="analysis-area"></div>
+    <button class="btn danger" id="btn-reset-stats" style="margin-top:6px">清除全部練習記錄</button>
+  </div>
+</section>
+
+<p class="footer-note"><a href="學習工作台.html">← 返回學習工作台</a><br>練習記錄保存在本機瀏覽器（localStorage），重新打開頁面不會丟失。</p>
+
+<script>
+/* ---------- 題庫（對應課本 §1.6 + 習題八、九） ---------- */
+const QUESTIONS = [
+ {id:1, tag:"度分秒換算", q:"1° 等於多少分？", opts:["10′","60′","100′","3600′"], ans:1,
+  ex:"1° = 60′（60 進位制，和 1 小時 = 60 分鐘一樣）。注意：3600″ 是 1° 換成「秒」的答案。"},
+ {id:2, tag:"度分秒換算", q:"1° 等於多少秒？", opts:["60″","360″","600″","3600″"], ans:3,
+  ex:"1° = 60′ × 60 = 3600″。連續乘兩次 60。"},
+ {id:3, tag:"度分秒換算", q:"0.3° 等於多少分？", opts:["3′","30′","18′","180′"], ans:2,
+  ex:"大化小 ×60：0.3 × 60 = 18′（習題八練習(3)）。"},
+ {id:4, tag:"度分秒換算", q:"把 3.6° 化成度、分的形式：", opts:["3°6′","3°36′","3°60′","4°36′"], ans:1,
+  ex:"整數部分 3°，小數部分 0.6° × 60 = 36′，所以 3.6° = 3°36′。"},
+ {id:5, tag:"度分秒換算", q:"把 57°18′ 用度表示：", opts:["57.18°","57.8°","57.3°","58.3°"], ans:2,
+  ex:"小化大 ÷60：18′ ÷ 60 = 0.3°，所以 57°18′ = 57.3°（習題八例1(2)）。"},
+ {id:6, tag:"度分秒換算", q:"把 4.25° 化成度、分的形式：", opts:["4°25′","4°15′","4°2′5″","5°15′"], ans:1,
+  ex:"0.25° × 60 = 15′，所以 4.25° = 4°15′。別被 25 迷惑直接寫 25′！"},
+ {id:7, tag:"度分秒運算", q:"計算：45°3′23″ + 2°58′57″ = ?", opts:["47°2′20″","48°1′20″","47°61′80″","48°2′20″"], ans:3,
+  ex:"23″+57″ = 80″ = 1′20″；3′+58′+1′ = 62′ = 1°2′；45°+2°+1° = 48°。答案 48°2′20″。滿 60 要逐級進位！"},
+ {id:8, tag:"度分秒運算", q:"計算：5°5′ − 3°14′ = ?", opts:["2°9′","1°51′","2°51′","1°9′"], ans:1,
+  ex:"5′ 不夠減 14′，借 1° 當 60′：5°5′ = 4°65′，4°65′ − 3°14′ = 1°51′。"},
+ {id:9, tag:"度分秒運算", q:"計算：7°41′15″ × 3 = ?", opts:["21°123′45″","22°3′45″","23°3′45″","23°4′45″"], ans:2,
+  ex:"分別乘：21°、123′、45″；123′ = 2°3′，所以 21°+2°3′ = 23°3′45″。"},
+ {id:10, tag:"度分秒運算", q:"計算：46°58′25″ ÷ 5 = ?", opts:["9.2°","9°11′5″","9°20′41″","9°23′41″"], ans:3,
+  ex:"逐級除：46÷5 = 9 餘 1°；1° = 60′，60+58 = 118′，118÷5 = 23 餘 3′；3′ = 180″，180+25 = 205″，205÷5 = 41″。答案 9°23′41″（不能寫 9.2°！）"},
+ {id:11, tag:"度分秒運算", q:"計算：48°39′ + 67°21′ = ?", opts:["115°","115°60′","116°","116°60′"], ans:2,
+  ex:"39′+21′ = 60′ = 1°，所以 48°+67°+1° = 116°。115°60′ 要化成 116°！"},
+ {id:12, tag:"度分秒運算", q:"計算：90° − 78°19′40″ = ?", opts:["12°","11°40′20″","12°40′20″","11°41′20″"], ans:1,
+  ex:"90° = 89°59′60″，逐位減：89−78 = 11°，59−19 = 40′，60−40 = 20″。答案 11°40′20″。"},
+ {id:13, tag:"互餘互補", q:"O 是直線 AB 上一點，∠AOC = 53°17′，則 ∠BOC = ?", opts:["127°","126°43′","126°17′","127°43′"], ans:1,
+  ex:"課本例題！∠BOC = 180° − 53°17′，借位：179°60′ − 53°17′ = 126°43′。直接寫 180°−53° = 127° 是經典錯法！"},
+ {id:14, tag:"互餘互補", q:"∠α = 60°32′，它的餘角是：", opts:["30°","29°28′","119°28′","30°28′"], ans:1,
+  ex:"餘角 = 90° − 60°32′，借位：89°60′ − 60°32′ = 29°28′。不是 30°！"},
+ {id:15, tag:"互餘互補", q:"∠α = 60°32′，它的補角是：", opts:["120°","29°28′","119°28′","118°28′"], ans:2,
+  ex:"補角 = 180° − 60°32′，借位：179°60′ − 60°32′ = 119°28′。不是 120°！"},
+ {id:16, tag:"互餘互補", q:"60° 的餘角的補角是：", opts:["30°","90°","120°","150°"], ans:3,
+  ex:"60° 的餘角 = 30°，30° 的補角 = 180° − 30° = 150°。分兩步走就不難。"},
+ {id:17, tag:"互餘互補", q:"一個角的度數是 x°，它的餘角和補角分別是：", opts:["90°−x 和 180°−x","180°−x 和 90°−x","90°+x 和 180°+x","x−90° 和 x−180°"], ans:0,
+  ex:"餘角 = 90°−x（和為直角），補角 = 180°−x（和為平角）。字母式也要會寫！"},
+ {id:18, tag:"互餘互補", q:"30° 與 60° 互餘。能說「30° 是餘角」嗎？", opts:["能","不能，要說「30° 是 60° 的餘角」","只有直角才可以","看情況"], ans:1,
+  ex:"不能！互餘是兩個角之間的關係，必須說清楚是「誰的」餘角（習題九練習 3(1)）。"},
+ {id:19, tag:"角的分類", q:"89° 的角是什麼角？", opts:["鈍角","銳角","直角","平角"], ans:1,
+  ex:"89° < 90°，是銳角！只差 1° 就到直角，但它仍然是銳角。"},
+ {id:20, tag:"角的分類", q:"170° 角的一半是什麼角？", opts:["直角","鈍角","銳角","平角"], ans:2,
+  ex:"170° ÷ 2 = 85° < 90°，所以是銳角（習題九練習(1)）。"},
+ {id:21, tag:"角的分類", q:"一個角是周角的八分之一，這個角是：", opts:["22.5°","45°","60°","90°"], ans:1,
+  ex:"周角 360° ÷ 8 = 45°（習題八練習(2)）。"},
+ {id:22, tag:"餘補性質", q:"設 ∠A = 25°，∠B 與 ∠A 互補，∠C 也與 ∠A 互補，則 ∠B 與 ∠C 的關係是：", opts:["互補","互餘","相等","無法確定"], ans:2,
+  ex:"∠B = ∠C = 155°。同角的補角相等（習題九第四部分）。"},
+ {id:23, tag:"餘補性質", q:"∠1 與 ∠2 互補，∠3 與 ∠4 互補，且 ∠1 = ∠3，則 ∠2 與 ∠4 的關係是：", opts:["相等","互補","互餘","無法確定"], ans:0,
+  ex:"∠2 = 180°−∠1 = 180°−∠3 = ∠4。等角的補角相等。"},
+ {id:24, tag:"度分秒運算", q:"計算：21°17′ × 5 = ?", opts:["105°","105°25′","106°25′","106°85′"], ans:2,
+  ex:"17′×5 = 85′ = 1°25′，所以 105° + 1°25′ = 106°25′。記得進位！"}
+];
+
+const ADVICE = {
+ "度分秒換算":"記住 60 進位：大化小 ×60、小化大 ÷60。0.25° 是 15′，不是 25′。",
+ "度分秒運算":"加滿 60 進 1、減借 1 當 60、乘分別乘再進位、除逐級分。每一步先寫『借位後』的式子再算。",
+ "互餘互補":"餘角 90° 減、補角 180° 減；帶『分』時一定先借位（90° = 89°60′），『分』不能丟！",
+ "角的分類":"界線只有兩條：90° 和 180°。89° 是銳角、91° 是鈍角，背熟界線就不會錯。",
+ "餘補性質":"同角（等角）的餘角相等、補角相等；推理時寫出 ∠B = 180°−∠A = ∠C 這條鏈。"
+};
+
+/* ---------- localStorage ---------- */
+const LS_WRONG="wb_am_wrong", LS_STATS="wb_am_stats";
+const getWrong=()=>JSON.parse(localStorage.getItem(LS_WRONG)||"[]");
+const setWrong=a=>localStorage.setItem(LS_WRONG,JSON.stringify(a));
+/* 錯題記錄升級：由只存 id 升級為存 {id,tag,q,ex}，方便工作台匯出學習報告 */
+function migrateWrong(){
+  const w=getWrong();
+  if(!w.some(x=>typeof x==="number")) return;
+  setWrong(w.map(x=>{
+    if(typeof x!=="number") return x;
+    const it=QUESTIONS.find(q=>q.id===x);
+    return it? {id:it.id,tag:it.tag,q:it.q,ex:it.ex} : null;
+  }).filter(Boolean));
+}
+const getStats=()=>JSON.parse(localStorage.getItem(LS_STATS)||"{}");
+const setStats=s=>localStorage.setItem(LS_STATS,JSON.stringify(s));
+
+function recordStat(tag, ok){
+  const s=getStats(); s[tag]=s[tag]||{r:0,w:0};
+  ok? s[tag].r++ : s[tag].w++; setStats(s);
+}
+
+/* ---------- 動效工具 ---------- */
+const reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function popBadge(){
+  const b=document.getElementById("wrong-badge");
+  b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop");
+}
+
+function confetti(){
+  if(reduceMotion) return;
+  const colors=["#a9c6e8","#a9d6b6","#f3d788","#f0b7c4","#c0574a"];
+  for(let i=0;i<36;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*100+"vw";
+    c.style.background=colors[i%colors.length];
+    c.style.setProperty("--fall-d",(1800+Math.random()*1600)+"ms");
+    c.style.setProperty("--spin",(360+Math.random()*540)+"deg");
+    c.style.animationDelay=(Math.random()*400)+"ms";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3800);
+  }
+}
+
+function countUp(el, target, suffix, dur=700){
+  if(reduceMotion){ el.textContent=target+suffix; return; }
+  const t0=performance.now();
+  (function tick(t){
+    const p=Math.min((t-t0)/dur,1);
+    const eased=1-Math.pow(1-p,4);
+    el.textContent=Math.round(target*eased)+suffix;
+    if(p<1) requestAnimationFrame(tick);
+  })(t0);
+}
+
+/* ---------- 分頁切換 ---------- */
+document.querySelectorAll("nav button").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    document.querySelectorAll("section").forEach(s=>s.classList.remove("on"));
+    document.getElementById(b.dataset.s).classList.add("on");
+    if(b.dataset.s==="wrong") renderWrong();
+    if(b.dataset.s==="analysis") renderAnalysis();
+    if(b.dataset.s==="quiz" && !quizState.started) renderQuizIntro();
+  };
+});
+
+/* ---------- 測驗 ---------- */
+let quizState={started:false};
+function renderQuizIntro(){
+  const area=document.getElementById("quiz-area");
+  area.innerHTML=`<h3>📝 驗收練習（共 ${QUESTIONS.length} 題）</h3>
+  <p class="q-count">涵蓋：度分秒換算・度分秒運算・互餘互補・角的分類・餘補性質。答錯的題會自動收入錯題本。</p>
+  <button class="btn" onclick="startQuiz(QUESTIONS)">開始測驗</button>`;
+  quizState.started=true;
+}
+
+function startQuiz(list){
+  quizState={started:true,list:[...list],idx:0,right:0,wrongIds:[]};
+  renderQ();
+}
+
+function renderQ(){
+  const {list,idx}=quizState;
+  const item=list[idx];
+  const area=document.getElementById("quiz-area");
+  area.innerHTML=`<p class="q-count">第 ${idx+1} / ${list.length} 題　<span class="tag t-exam">${item.tag}</span></p>
+  <div class="progress"><i id="pbar"></i></div>
+  <h3 style="margin:10px 0;font-size:20px">${item.q}</h3>
+  <div id="opts">${item.opts.map((o,i)=>`<button class="opt" style="--i:${i}" onclick="answer(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}</div>
+  <div class="explain" id="explain"></div>
+  <div id="next-slot"></div>`;
+  requestAnimationFrame(()=>{
+    const bar=document.getElementById("pbar");
+    if(bar) bar.style.transform=`scaleX(${idx/list.length})`;
+  });
+}
+
+function answer(i){
+  const {list,idx}=quizState, item=list[idx];
+  const btns=document.querySelectorAll("#opts .opt");
+  btns.forEach((b,j)=>{ b.disabled=true;
+    if(j===item.ans) b.classList.add("right");
+    else if(j===i) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+  const ok=(i===item.ans);
+  recordStat(item.tag, ok);
+  const w=getWrong();
+  const has=w.some(x=>(typeof x==="number"? x : x.id)===item.id);
+  if(!ok && !has){ w.push({id:item.id,tag:item.tag,q:item.q,ex:item.ex}); setWrong(w); popBadge(); }
+  if(ok && has){ setWrong(w.filter(x=>(typeof x==="number"? x : x.id)!==item.id)); }
+  ok? quizState.right++ : quizState.wrongIds.push(item.id);
+  const ex=document.getElementById("explain");
+  ex.innerHTML=(ok? "✅ <b>答對了！</b> " : "❌ <b>答錯了</b>，已收入錯題本。 ")+item.ex;
+  ex.classList.add("on");
+  const bar=document.getElementById("pbar");
+  if(bar) bar.style.transform=`scaleX(${(idx+1)/list.length})`;
+  const slot=document.getElementById("next-slot");
+  if(quizState.idx+1 < list.length){
+    slot.innerHTML=`<button class="btn" onclick="nextQ()">下一題</button>`;
+  }else{
+    slot.innerHTML=`<button class="btn" onclick="renderResult()">查看成績</button>`;
+  }
+  updateBadge();
+}
+function nextQ(){ quizState.idx++; renderQ(); }
+
+function renderResult(){
+  const total=quizState.list.length, r=quizState.right;
+  const pct=Math.round(r/total*100);
+  let msg;
+  if(pct>=85) msg="🎉 優秀！角的度量掌握得很好，60 進位已經難不倒你。";
+  else if(pct>=60) msg="👍 不錯！把錯題本裡的題重練一遍，特別是借位題。";
+  else msg="💪 先回「學習重點」重溫借位法則，再重練錯題。";
+  document.getElementById("quiz-area").innerHTML=`
+    <h3>測驗完成！</h3>
+    <div class="score-big score-pop"><span id="score-n"></span></div>
+    <p class="result-msg">${msg}</p>
+    <div class="result-btns">
+      <button class="btn" onclick="startQuiz(QUESTIONS)">再測一次</button>
+      <button class="btn ghost" onclick="goWrong()">去錯題本重練</button>
+    </div>`;
+  const sn=document.getElementById("score-n");
+  countUp(sn, r, " / "+total);
+  if(pct>=85) confetti();
+}
+
+function goWrong(){
+  document.querySelector('nav button[data-s="wrong"]').click();
+}
+
+/* ---------- 錯題本 ---------- */
+function updateBadge(){
+  const n=getWrong().length;
+  document.getElementById("wrong-badge").textContent = n? `(${n})` : "";
+}
+
+function renderWrong(){
+  const ids=getWrong();
+  const list=document.getElementById("wrong-list");
+  const sum=document.getElementById("wrong-summary");
+  if(!ids.length){
+    sum.textContent="目前沒有錯題，太棒了！去做「驗收練習」試試。";
+    list.innerHTML="";
+    document.getElementById("btn-retry-all").style.display="none";
+    document.getElementById("btn-clear-wrong").style.display="none";
+    return;
+  }
+  sum.textContent=`共 ${ids.length} 道錯題。重練答對後會自動從錯題本移除。`;
+  list.innerHTML=ids.map((e,i)=>{
+    const item= typeof e==="number"? QUESTIONS.find(q=>q.id===e) : e;
+    return `<div class="wrong-item" style="--i:${i}">
+      <p class="q-count"><span class="tag t-hard">${item.tag}</span></p>
+      <p style="margin:6px 0">${item.q}</p>
+      <button class="btn ghost" style="margin-top:4px;padding:6px 16px" onclick="startQuiz([QUESTIONS.find(q=>q.id===${item.id})])">重練這題</button>
+    </div>`;
+  }).join("");
+  document.getElementById("btn-retry-all").style.display="inline-block";
+  document.getElementById("btn-clear-wrong").style.display="inline-block";
+}
+
+document.getElementById("btn-retry-all").onclick=()=>{
+  const list=getWrong().map(e=>QUESTIONS.find(q=>q.id===(typeof e==="number"? e : e.id)));
+  document.querySelector('nav button[data-s="quiz"]').click();
+  startQuiz(list);
+};
+document.getElementById("btn-clear-wrong").onclick=()=>{
+  if(confirm("確定要清空錯題本嗎？")){ setWrong([]); renderWrong(); updateBadge(); }
+};
+
+/* ---------- 弱項分析 ---------- */
+function renderAnalysis(){
+  const s=getStats();
+  const area=document.getElementById("analysis-area");
+  const tags=Object.keys(s);
+  if(!tags.length){
+    area.innerHTML=`<p class="q-count">還沒有練習記錄。先去做「驗收練習」，我再幫你分析弱項！</p>`;
+    return;
+  }
+  const rows=tags.map(t=>{
+    const {r,w}=s[t], total=r+w, pct=Math.round(r/total*100);
+    return {t,r,w,total,pct};
+  }).sort((a,b)=>a.pct-b.pct);
+  area.innerHTML=rows.map((o,i)=>{
+    const color=o.pct>=80?"var(--green)":o.pct>=50?"var(--amber)":"var(--stamp)";
+    return `<div class="bar-wrap" style="--i:${i}">
+      <div class="bar-label"><span>${o.t}</span><span>${o.r}/${o.total} 對（${o.pct}%）</span></div>
+      <div class="bar"><i style="--i:${i};background:${color};width:${o.pct}%"></i></div>
+    </div>`;
+  }).join("")+
+  `<h3 style="margin-top:18px">🎯 你的弱項與建議</h3>`+
+  rows.slice(0,3).filter(o=>o.pct<100).map(o=>
+    `<div class="formula warn" style="margin-top:8px"><b>${o.t}（對率 ${o.pct}%）</b>　${ADVICE[o.t]||""}</div>`
+  ).join("") +
+  (rows.every(o=>o.pct===100) ? `<div class="formula" style="margin-top:8px">全部知識點 100% 正確，本節已完全掌握！🎉</div>` : "");
+}
+document.getElementById("btn-reset-stats").onclick=()=>{
+  if(confirm("確定清除全部練習記錄？錯題本也會一併清空。")){
+    localStorage.removeItem(LS_STATS); localStorage.removeItem(LS_WRONG);
+    renderAnalysis(); updateBadge();
+  }
+};
+
+/* ---------- 初始化 ---------- */
+migrateWrong();
+renderQuizIntro();
+updateBadge();
+/* 支援工作台深層連結：?tab=wrong / analysis / quiz / formula */
+const urlTab=new URLSearchParams(location.search).get("tab");
+if(urlTab){ const b=document.querySelector(`nav button[data-s="${urlTab}"]`); if(b) b.click(); }
+</script>
+</body>
+</html>
