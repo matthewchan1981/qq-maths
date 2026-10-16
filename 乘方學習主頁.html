@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>乘方學習主頁 §2.10</title>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/ma-shan-zheng@5/index.css" rel="stylesheet">
+<style>
+:root{
+  /* 手帳紙感配色（與工作台一致） */
+  --paper:#f7f2e6; --paper-line:#e9e0cb;
+  --note:#fffdf4; --note-border:#e6dcc4;
+  --ink:#3b362c; --ink-soft:#8a8069;
+  --stamp:#c0574a; --blue:#3f6db3; --green:#4a8a5c; --amber:#b8862e;
+  --tape-pink:#f0b7c4; --tape-mint:#a9d6b6; --tape-yellow:#f3d788; --tape-blue:#a9c6e8;
+  --radius:6px;
+  --hand:"Ma Shan Zheng","Microsoft JhengHei",cursive;
+  --ease-quart:cubic-bezier(0.25,1,0.5,1);
+  --ease-quint:cubic-bezier(0.22,1,0.36,1);
+  --ease-expo:cubic-bezier(0.16,1,0.3,1);
+  --d-instant:120ms; --d-fast:220ms; --d-mid:380ms; --d-hero:640ms;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--paper);
+  background-image:repeating-linear-gradient(transparent 0 29px, var(--paper-line) 29px 30px);
+  color:var(--ink);
+  font-family:"Microsoft JhengHei","PingFang HK","PingFang TC",sans-serif;
+  font-size:16px;line-height:1.8;padding:24px 20px 40px;max-width:920px;margin:0 auto;
+}
+h1{font-family:var(--hand);font-size:42px;font-weight:400;letter-spacing:2px}
+.sub{color:var(--ink-soft);font-size:15px;margin-top:2px}
+
+.hero{animation:hero-in var(--d-hero) var(--ease-expo) both}
+.hero h1 .wave{display:inline-block;animation:wave 900ms var(--ease-quart) .55s both;transform-origin:70% 70%}
+@keyframes hero-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes wave{
+  0%{transform:rotate(0)} 20%{transform:rotate(16deg)}
+  45%{transform:rotate(-10deg)} 70%{transform:rotate(8deg)}
+  100%{transform:rotate(0)}
+}
+
+nav{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0;animation:hero-in var(--d-hero) var(--ease-expo) 120ms both}
+nav button{position:relative;background:transparent;color:var(--ink);border:1.5px solid var(--ink-soft);border-radius:999px;
+  padding:9px 20px;font-size:15px;cursor:pointer;font-family:inherit;
+  transition:transform var(--d-instant) var(--ease-quart),background var(--d-fast) var(--ease-quart),border-color var(--d-fast) var(--ease-quart),color var(--d-fast) var(--ease-quart)}
+nav button:hover{transform:translateY(-2px) rotate(-1deg);border-color:var(--blue)}
+nav button:active{transform:scale(.96)}
+nav button.active{background:var(--blue);border-color:var(--blue);color:#fdfaf0;font-weight:600}
+#wrong-badge{display:inline-block;color:var(--stamp);font-weight:700}
+#wrong-badge.pop{animation:pop 340ms var(--ease-quint)}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+
+section{display:none}
+section.on{display:block}
+section.on .card{animation:note-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*90ms)}
+@keyframes note-in{from{opacity:0;transform:rotate(var(--rot,0deg)) translateY(14px)}to{opacity:1;transform:rotate(var(--rot,0deg))}}
+
+.card{position:relative;background:var(--note);border:1px solid var(--note-border);border-radius:2px;
+  padding:24px 22px 20px;margin-bottom:18px;transform:rotate(var(--rot,0deg));
+  box-shadow:0 3px 10px rgba(80,66,40,.10), 0 1px 2px rgba(80,66,40,.08);
+  transition:transform var(--d-fast) var(--ease-quart),box-shadow var(--d-fast) var(--ease-quart)}
+.card:hover{transform:rotate(0deg) translateY(-3px);box-shadow:0 10px 22px rgba(80,66,40,.16), 0 2px 4px rgba(80,66,40,.08)}
+.card::before{content:"";position:absolute;top:-11px;left:50%;width:96px;height:24px;
+  transform:translateX(-50%) rotate(var(--tape-rot,-2deg));
+  background:var(--tape,var(--tape-yellow));opacity:.82;border-radius:2px;
+  box-shadow:0 1px 2px rgba(80,66,40,.12)}
+.card h3{font-family:var(--hand);font-size:23px;font-weight:400;letter-spacing:1px;margin-bottom:10px}
+
+.tag{display:inline-block;font-family:var(--hand);font-size:16px;padding:1px 12px;border-radius:3px;margin-right:8px;transform:rotate(-2deg)}
+.t-hard{background:var(--tape-pink);color:#8a3343}
+.t-exam{background:var(--tape-mint);color:#2f6b45}
+.t-easy{background:var(--tape-yellow);color:#8a6413}
+
+ul{padding-left:22px} li{margin:6px 0;animation:li-in var(--d-mid) var(--ease-quint) both}
+section.on li{animation-delay:calc(var(--i,0)*90ms + var(--j,0)*45ms)}
+@keyframes li-in{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+mark{background:linear-gradient(transparent 45%, var(--tape-yellow) 45% 95%, transparent 95%);color:inherit;padding:0 2px}
+
+.formula{background:#f9f5e8;border-left:3px solid var(--blue);border-radius:4px;padding:12px 16px;margin:10px 0;font-size:16px}
+.formula b{color:var(--blue)}
+.warn{border-left:3px solid var(--stamp)}
+.warn b{color:var(--stamp)}
+.q-count{color:var(--ink-soft);font-size:14px}
+
+.progress{height:8px;background:var(--paper-line);border-radius:99px;overflow:hidden;margin:14px 0 6px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--tape-blue),var(--tape-mint));border-radius:99px;transform-origin:left;
+  transition:transform var(--d-mid) var(--ease-expo);transform:scaleX(0)}
+
+.opt{position:relative;display:block;width:100%;text-align:left;background:#fbf8ee;border:1px solid var(--note-border);border-radius:4px;
+  padding:13px 18px;margin:9px 0;color:var(--ink);font-size:16.5px;cursor:pointer;font-family:inherit;
+  transition:transform var(--d-instant) var(--ease-quart),border-color var(--d-fast) var(--ease-quart),background var(--d-fast) var(--ease-quart),color var(--d-fast) var(--ease-quart);
+  animation:opt-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*60ms + 100ms)}
+@keyframes opt-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.opt:hover:not(:disabled){transform:translateX(6px);border-color:var(--blue)}
+.opt:active:not(:disabled){transform:translateX(6px) scale(.97)}
+.opt:disabled{cursor:default}
+.opt.right{background:#e9f2e4;border-color:var(--green);color:#33603f;animation:pulse-right 500ms var(--ease-quint)}
+.opt.wrong{background:#f9e9e5;border-color:var(--stamp);color:var(--stamp);animation:shake 420ms var(--ease-quart)}
+.opt.dim{opacity:.45}
+@keyframes pulse-right{
+  0%{transform:scale(1)} 35%{transform:scale(1.03);box-shadow:0 0 0 6px rgba(74,138,92,.16)}
+  100%{transform:scale(1);box-shadow:none}
+}
+@keyframes shake{
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)}
+  40%{transform:translateX(7px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(3px)}
+}
+
+.explain{background:#eef3fa;border:1px solid #c8d6ea;border-radius:4px;padding:13px 17px;margin-top:12px;font-size:15px;display:none}
+.explain.on{display:block;animation:note-in var(--d-mid) var(--ease-quint)}
+.explain b{color:var(--amber)}
+
+.btn{position:relative;background:var(--blue);color:#fdfaf0;border:none;border-radius:var(--radius);
+  padding:10px 24px;font-size:15px;font-weight:600;cursor:pointer;margin-top:14px;font-family:inherit;
+  transition:transform var(--d-instant) var(--ease-quart),filter var(--d-fast) var(--ease-quart)}
+.btn:hover{transform:translateY(-2px) rotate(-1deg);filter:brightness(1.06)}
+.btn:active{transform:scale(.95)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink-soft)}
+.btn.danger{background:transparent;color:var(--stamp);border:1.5px dashed var(--stamp)}
+.btn:focus-visible,.opt:focus-visible,nav button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+.score-big{font-family:Georgia,"Times New Roman",serif;font-size:60px;font-weight:700;color:var(--blue);text-align:center;margin:12px 0;font-variant-numeric:tabular-nums}
+.score-pop{animation:score-pop 600ms var(--ease-quint)}
+@keyframes score-pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+.result-msg{text-align:center;animation:note-in var(--d-mid) var(--ease-quint) 200ms both}
+.result-btns{text-align:center;animation:note-in var(--d-mid) var(--ease-quint) 320ms both}
+
+.confetti{position:fixed;top:-12px;width:10px;height:16px;border-radius:2px;pointer-events:none;z-index:99;
+  animation:fall var(--fall-d,2400ms) var(--ease-quart) forwards}
+@keyframes fall{
+  0%{transform:translateY(0) rotate(0);opacity:1}
+  85%{opacity:1}
+  100%{transform:translateY(105vh) rotate(var(--spin,540deg));opacity:0}
+}
+
+.wrong-item{border:1px dashed var(--note-border);border-radius:4px;padding:15px 18px;margin:12px 0;background:#fbf8ee;
+  transition:transform var(--d-fast) var(--ease-quart),border-color var(--d-fast) var(--ease-quart);
+  animation:note-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*70ms)}
+.wrong-item:hover{transform:translateX(4px);border-color:var(--stamp)}
+
+.bar-wrap{margin:12px 0;animation:note-in var(--d-mid) var(--ease-quint) both;animation-delay:calc(var(--i,0)*60ms)}
+.bar-label{display:flex;justify-content:space-between;font-size:14.5px;margin-bottom:4px}
+.bar{height:11px;background:var(--paper-line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;transform-origin:left;animation:bar-grow 700ms var(--ease-expo) both;animation-delay:calc(var(--i,0)*60ms + 150ms)}
+@keyframes bar-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+.footer-note{color:var(--ink-soft);font-size:13.5px;text-align:center;margin-top:36px}
+.footer-note a{color:var(--blue);text-decoration:none}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;transition-duration:0.01ms!important}
+  .confetti{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1><span class="wave">📐</span> 乘方學習主頁</h1>
+  <p class="sub">代數第二章 §2.10 有理數的乘方(一)（P44-46）｜ 澳門 S1 代數</p>
+</div>
+
+<nav>
+  <button data-s="learn" class="active">學習重點</button>
+  <button data-s="formula">概念法則</button>
+  <button data-s="quiz">驗收練習</button>
+  <button data-s="wrong">錯題本 <span id="wrong-badge"></span></button>
+  <button data-s="analysis">弱項分析</button>
+</nav>
+
+<!-- ============ 1. 學習重點 ============ -->
+<section id="learn" class="on">
+  <div class="card" style="--i:0;--tape:var(--tape-mint);--rot:-0.8deg;--tape-rot:-3deg">
+    <h3><span class="tag t-exam">必考點</span>考試最愛出的五件事</h3>
+    <ul>
+      <li style="--j:0"><b>乘方的意義</b>：n 個相同因數 a 相乘記作 aⁿ，認識<b>底數、指數、冪</b>三個名詞</li>
+      <li style="--j:1"><b>−aⁿ 與 (−a)ⁿ 的分別</b>：−3² = −9，(−3)² = 9——<mark>括號決定底數</mark>，本章第一大考點</li>
+      <li style="--j:2"><b>符號規律</b>：負數的冪看指數奇偶：偶次冪為正、奇次冪為負；正數的任何次冪都是正數</li>
+      <li style="--j:3"><b>分數小數乘方</b>：帶分數先化假分數（−1½ = −3/2）；小數乘方逐位數小數點（0.1⁶ = 0.000001）</li>
+      <li style="--j:4"><b>乘方應用</b>：細胞分裂 30 分鐘翻倍，5 小時分裂 10 次 → 2¹⁰ = 1024</li>
+    </ul>
+  </div>
+  <div class="card" style="--i:1;--tape:var(--tape-yellow);--rot:0.7deg;--tape-rot:2deg">
+    <h3><span class="tag t-easy">易錯點</span>這次練習中真實出現的錯誤</h3>
+    <ul>
+      <li style="--j:0">8³ = 8×8×8 = <mark>512，不是 128</mark>（128 是 8×8×2 的錯覺，三次方要乘三次）</li>
+      <li style="--j:1">0.1⁶ = <mark>0.000001</mark>（每乘一次 0.1 多一位小數，共 6 位），不是 0.1 也不是 0.6</li>
+      <li style="--j:2">(−1.3)⁴ <mark>不能寫成 −1.3⁴</mark>——沒有括號，底數就變成 1.3，負號不參與乘方</li>
+      <li style="--j:3">(−1½)³ 要<mark>先化假分數</mark> −3/2 再乘方：−27/8 = −3⅜</li>
+      <li style="--j:4">(−2)⁴ = +16，不是 −16——負數的<mark>偶次冪是正數</mark>，先定符號再算絕對值</li>
+    </ul>
+  </div>
+  <div class="card" style="--i:2;--tape:var(--tape-pink);--rot:-0.6deg;--tape-rot:3deg">
+    <h3><span class="tag t-hard">難點</span>需要重點突破</h3>
+    <ul>
+      <li style="--j:0"><b>負分數乘方</b>：符號與絕對值分開處理，如 (−1½)³ = −(3/2)³ = −27/8</li>
+      <li style="--j:1"><b>大指數判斷</b>：(−1)²⁰²⁶ = 1、(−1)²⁰²⁵ = −1——不用硬算，看奇偶即可</li>
+      <li style="--j:2"><b>字母作指數</b>：2a 個 m 相乘 = m²ᵃ，指數可以是代數式</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 2. 概念法則 ============ -->
+<section id="formula">
+  <div class="card" style="--i:0;--tape:var(--tape-blue);--rot:0.6deg;--tape-rot:-2deg">
+    <h3>乘方的定義</h3>
+    <div class="formula"><b>定義</b>　求幾個相同因數的積的運算，叫做<b>乘方</b>；乘方的結果叫做<b>冪</b></div>
+    <div class="formula"><b>記法</b>　a·a·a·…·a（n 個，n 為正整數）= aⁿ，讀作「a 的 n 次方」（或 a 的 n 次冪）</div>
+    <div class="formula"><b>三個名詞</b>　aⁿ 中：a 是<b>底數</b>，n 是<b>指數</b>，aⁿ 是<b>冪</b></div>
+    <div class="formula"><b>特例</b>　3² 讀作「3 的平方」，3³ 讀作「3 的立方」</div>
+  </div>
+  <div class="card" style="--i:1;--tape:var(--tape-pink);--rot:-0.7deg;--tape-rot:2deg">
+    <h3>−aⁿ 與 (−a)ⁿ（本章最關鍵）</h3>
+    <div class="formula warn"><b>−3²</b>　讀作「3 的平方的相反數」= −(3×3) = <b>−9</b>（底數是 3）</div>
+    <div class="formula warn"><b>(−3)²</b>　讀作「−3 的平方」= (−3)×(−3) = <b>+9</b>（底數是 −3）</div>
+    <div class="formula"><b>口訣</b>　有括號，負號參與乘方；沒括號，負號只在外等候</div>
+  </div>
+  <div class="card" style="--i:2;--tape:var(--tape-mint);--rot:0.8deg;--tape-rot:-3deg">
+    <h3>乘方運算的符號規律</h3>
+    <div class="formula"><b>負數的冪</b>　指數是<b>偶數</b>時，冪是<b>正數</b>；指數是<b>奇數</b>時，冪是<b>負數</b></div>
+    <div class="formula"><b>正數的冪</b>　正數的任何次冪都是<b>正數</b></div>
+    <div class="formula"><b>計算兩步</b>　① 按奇偶定符號　② 把絕對值乘方</div>
+    <div class="formula warn"><b>注意</b>　0 的正整數次冪都是 0；帶分數先化假分數再乘方</div>
+  </div>
+</section>
+
+<!-- ============ 3. 驗收練習 ============ -->
+<section id="quiz">
+  <div class="card" id="quiz-box" style="--i:0;--tape:var(--tape-yellow);--rot:-0.5deg">
+    <div id="quiz-area"></div>
+  </div>
+</section>
+
+<!-- ============ 4. 錯題本 ============ -->
+<section id="wrong">
+  <div class="card" style="--i:0;--tape:var(--tape-pink);--rot:0.6deg">
+    <h3>📒 錯題本</h3>
+    <p class="q-count" id="wrong-summary"></p>
+    <div id="wrong-list"></div>
+    <button class="btn" id="btn-retry-all" style="display:none">全部重練</button>
+    <button class="btn danger" id="btn-clear-wrong" style="display:none">清空錯題本</button>
+  </div>
+</section>
+
+<!-- ============ 5. 弱項分析 ============ -->
+<section id="analysis">
+  <div class="card" style="--i:0;--tape:var(--tape-blue);--rot:-0.6deg">
+    <h3>📊 弱項分析（按知識點統計你的答對率）</h3>
+    <div id="analysis-area"></div>
+    <button class="btn danger" id="btn-reset-stats" style="margin-top:6px">清除全部練習記錄</button>
+  </div>
+</section>
+
+<p class="footer-note"><a href="學習工作台.html">← 返回學習工作台</a><br>練習記錄保存在本機瀏覽器（localStorage），重新打開頁面不會丟失。</p>
+
+<script>
+/* ---------- 題庫（對應課本 §2.10 乘方(一) P44-46） ---------- */
+const QUESTIONS = [
+ {id:1, tag:"乘方概念", q:"求幾個相同因數的積的運算，叫做：", opts:["乘法","乘方","開方","加法"], ans:1,
+  ex:"求幾個相同因數的積的運算叫做乘方，乘方的結果叫做冪（P45 定義）。"},
+ {id:2, tag:"乘方概念", q:"在 aⁿ 中，a 和 n 分別叫做：", opts:["指數、底數","底數、指數","冪、指數","底數、冪"], ans:1,
+  ex:"a 是底數（被乘的數），n 是指數（乘的個數），aⁿ 是冪（結果）。"},
+ {id:3, tag:"乘方概念", q:"5×5×5×5×5 寫成乘方形式，並讀出來：", opts:["5⁵，讀作 5 的 5 次方","5⁵，讀作 5 的平方","4⁵，讀作 4 的 5 次方","5×5，讀作 5 乘 5"], ans:0,
+  ex:"5 個 5 相乘 = 5⁵，讀作「5 的 5 次方」（也可說 5 的 5 次冪）。"},
+ {id:4, tag:"乘方概念", q:"一個細胞 30 分鐘分裂成 2 個，經過 5 小時，1 個細胞分裂成多少個？", opts:["20 個","100 個","512 個","1024 個"], ans:3,
+  ex:"5 小時 = 10 個 30 分鐘，分裂 10 次：2¹⁰ = 1024 個（P44 問題情境）。"},
+ {id:5, tag:"底數與指數", q:"把 (−1.3)(−1.3)(−1.3)(−1.3) 寫成乘方形式：", opts:["−1.3⁴","(−1.3)⁴","4×(−1.3)","(−1.3)×4"], ans:1,
+  ex:"4 個 (−1.3) 相乘 = (−1.3)⁴。必須加括號！−1.3⁴ 的底數是 1.3，負號不參與乘方，意思完全不同。"},
+ {id:6, tag:"底數與指數", q:"(1/5)⁷ 的底數和指數分別是：", opts:["底數 7、指數 1/5","底數 1/5、指數 7","底數 5、指數 7","底數 1、指數 5"], ans:1,
+  ex:"aⁿ 中 a 是底數、n 是指數。(1/5)⁷ 表示 7 個 1/5 相乘（P45 練習(3)）。"},
+ {id:7, tag:"底數與指數", q:"m·m·m·…·m（2a 個 m 相乘）= ?", opts:["2am","m²+a","m²ᵃ","(2a)ᵐ"], ans:2,
+  ex:"2a 個相同因數 m 相乘 = m 的 2a 次方 = m²ᵃ。底數 m、指數 2a（P45 練習(4)）。"},
+ {id:8, tag:"−aⁿ與(−a)ⁿ", q:"計算：−3² = ?", opts:["9","−9","6","−6"], ans:1,
+  ex:"−3² = −(3×3) = −9。沒有括號，底數是 3，先平方再加負號（P45 你能明辨）。"},
+ {id:9, tag:"−aⁿ與(−a)ⁿ", q:"計算：(−3)² = ?", opts:["−9","9","−6","6"], ans:1,
+  ex:"(−3)² = (−3)×(−3) = +9。有括號，底數是 −3，負數的偶次冪為正。"},
+ {id:10, tag:"−aⁿ與(−a)ⁿ", q:"−3² 的正確讀法是：", opts:["負 3 的平方","3 的平方的相反數","負 3 的負平方","3 的負平方"], ans:1,
+  ex:"−3² 讀作「3 的平方的相反數」；(−3)² 才讀作「−3 的平方」。讀法決定理解！"},
+ {id:11, tag:"−aⁿ與(−a)ⁿ", q:"下列哪個式子的計算正確？", opts:["−2⁴ = 16","(−2)⁴ = −16","−2⁴ = −16","(−2)⁴ = −8"], ans:2,
+  ex:"−2⁴ = −(2⁴) = −16（底數是 2）；(−2)⁴ = +16（底數是 −2，偶次冪為正）。兩者天差地別！"},
+ {id:12, tag:"乘方計算", q:"計算：5³ = ?", opts:["15","25","125","625"], ans:2,
+  ex:"5³ = 5×5×5 = 125（P45 例1(1)）。"},
+ {id:13, tag:"乘方計算", q:"計算：8³ = ?", opts:["24","128","256","512"], ans:3,
+  ex:"8³ = 8×8×8 = 64×8 = 512。三次方要乘三次，128 = 8×8×2 是常見錯覺！"},
+ {id:14, tag:"乘方計算", q:"計算：(−4)³ = ?", opts:["64","−64","−12","12"], ans:1,
+  ex:"奇次冪為負：(−4)³ = −(4×4×4) = −64（P46 例2(1)）。"},
+ {id:15, tag:"乘方計算", q:"計算：(−2)⁴ = ?", opts:["−16","16","−8","8"], ans:1,
+  ex:"偶次冪為正：(−2)⁴ = +(2×2×2×2) = 16（P46 例2(2)）。先定符號再算絕對值！"},
+ {id:16, tag:"乘方計算", q:"計算：0.1⁶ = ?", opts:["0.6","0.1","0.000001","0.0000001"], ans:2,
+  ex:"每乘一次 0.1，小數點左移一位：0.1 → 0.01 → 0.001 → … → 0.000001（6 位小數）。"},
+ {id:17, tag:"乘方計算", q:"計算：(−1½)³ = ?", opts:["27/8","−27/8","−9/8","−3/2"], ans:1,
+  ex:"先化假分數：−1½ = −3/2；(−3/2)³ = −27/8 = −3⅜（P46 例1(5)）。奇次冪為負。"},
+ {id:18, tag:"乘方計算", q:"計算：(2/3)² = ?", opts:["4/6","2/9","4/9","4/3"], ans:2,
+  ex:"(2/3)² = (2×2)/(3×3) = 4/9。分子分母分別乘方。"},
+ {id:19, tag:"符號規律", q:"當指數是偶數時，負數的冪是什麼數？", opts:["負數","正數","0","無法確定"], ans:1,
+  ex:"符號規律：負數的偶次冪為正、奇次冪為負；正數的任何次冪都是正數（P46 總結）。"},
+ {id:20, tag:"符號規律", q:"(−1)²⁰²⁶ = ?", opts:["−1","1","2026","−2026"], ans:1,
+  ex:"2026 是偶數，負數的偶次冪為正：(−1)²⁰²⁶ = 1。不用硬乘 2026 次！"},
+ {id:21, tag:"符號規律", q:"(−1)²⁰²⁵ = ?", opts:["1","−1","2025","0"], ans:1,
+  ex:"2025 是奇數，負數的奇次冪為負：(−1)²⁰²⁵ = −1。和第 20 題對比記憶！"},
+ {id:22, tag:"符號規律", q:"正數的任何次冪都是：", opts:["正數","負數","0","視指數奇偶而定"], ans:0,
+  ex:"正數的任何次冪都是正數——符號規律三句話之一，不用看指數。"}
+];
+
+const ADVICE = {
+ "乘方概念":"n 個相同因數相乘 = aⁿ；記住底數、指數、冪三個名詞的位置。",
+ "底數與指數":"負數和分數作底數必須加括號：(−1.3)⁴ 不能寫 −1.3⁴。",
+ "−aⁿ與(−a)ⁿ":"有括號負號參與乘方，沒括號負號只在外等候；先用讀法區分再計算。",
+ "乘方計算":"先定符號（看底數正負和指數奇偶），再把絕對值乘方；三次方要乘三次。",
+ "符號規律":"負數冪看奇偶：偶正奇負；正數冪恒正；大指數題如 (−1)²⁰²⁵ 直接用規律。"
+};
+
+/* ---------- localStorage ---------- */
+const LS_WRONG="wb_pow_wrong", LS_STATS="wb_pow_stats";
+const getWrong=()=>JSON.parse(localStorage.getItem(LS_WRONG)||"[]");
+const setWrong=a=>localStorage.setItem(LS_WRONG,JSON.stringify(a));
+/* 錯題記錄升級：由只存 id 升級為存 {id,tag,q,ex}，方便工作台匯出學習報告 */
+function migrateWrong(){
+  const w=getWrong();
+  if(!w.some(x=>typeof x==="number")) return;
+  setWrong(w.map(x=>{
+    if(typeof x!=="number") return x;
+    const it=QUESTIONS.find(q=>q.id===x);
+    return it? {id:it.id,tag:it.tag,q:it.q,ex:it.ex} : null;
+  }).filter(Boolean));
+}
+const getStats=()=>JSON.parse(localStorage.getItem(LS_STATS)||"{}");
+const setStats=s=>localStorage.setItem(LS_STATS,JSON.stringify(s));
+
+function recordStat(tag, ok){
+  const s=getStats(); s[tag]=s[tag]||{r:0,w:0};
+  ok? s[tag].r++ : s[tag].w++; setStats(s);
+}
+
+/* ---------- 動效工具 ---------- */
+const reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function popBadge(){
+  const b=document.getElementById("wrong-badge");
+  b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop");
+}
+
+function confetti(){
+  if(reduceMotion) return;
+  const colors=["#a9c6e8","#a9d6b6","#f3d788","#f0b7c4","#c0574a"];
+  for(let i=0;i<36;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*100+"vw";
+    c.style.background=colors[i%colors.length];
+    c.style.setProperty("--fall-d",(1800+Math.random()*1600)+"ms");
+    c.style.setProperty("--spin",(360+Math.random()*540)+"deg");
+    c.style.animationDelay=(Math.random()*400)+"ms";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),3800);
+  }
+}
+
+function countUp(el, target, suffix, dur=700){
+  if(reduceMotion){ el.textContent=target+suffix; return; }
+  const t0=performance.now();
+  (function tick(t){
+    const p=Math.min((t-t0)/dur,1);
+    const eased=1-Math.pow(1-p,4);
+    el.textContent=Math.round(target*eased)+suffix;
+    if(p<1) requestAnimationFrame(tick);
+  })(t0);
+}
+
+/* ---------- 分頁切換 ---------- */
+document.querySelectorAll("nav button").forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active");
+    document.querySelectorAll("section").forEach(s=>s.classList.remove("on"));
+    document.getElementById(b.dataset.s).classList.add("on");
+    if(b.dataset.s==="wrong") renderWrong();
+    if(b.dataset.s==="analysis") renderAnalysis();
+    if(b.dataset.s==="quiz" && !quizState.started) renderQuizIntro();
+  };
+});
+
+/* ---------- 測驗 ---------- */
+let quizState={started:false};
+function renderQuizIntro(){
+  const area=document.getElementById("quiz-area");
+  area.innerHTML=`<h3>📝 驗收練習（共 ${QUESTIONS.length} 題）</h3>
+  <p class="q-count">涵蓋：乘方概念・底數與指數・−aⁿ與(−a)ⁿ・乘方計算・符號規律。答錯的題會自動收入錯題本。</p>
+  <button class="btn" onclick="startQuiz(QUESTIONS)">開始測驗</button>`;
+  quizState.started=true;
+}
+
+function startQuiz(list){
+  quizState={started:true,list:[...list],idx:0,right:0,wrongIds:[]};
+  renderQ();
+}
+
+function renderQ(){
+  const {list,idx}=quizState;
+  const item=list[idx];
+  const area=document.getElementById("quiz-area");
+  area.innerHTML=`<p class="q-count">第 ${idx+1} / ${list.length} 題　<span class="tag t-exam">${item.tag}</span></p>
+  <div class="progress"><i id="pbar"></i></div>
+  <h3 style="margin:10px 0;font-size:20px">${item.q}</h3>
+  <div id="opts">${item.opts.map((o,i)=>`<button class="opt" style="--i:${i}" onclick="answer(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join("")}</div>
+  <div class="explain" id="explain"></div>
+  <div id="next-slot"></div>`;
+  requestAnimationFrame(()=>{
+    const bar=document.getElementById("pbar");
+    if(bar) bar.style.transform=`scaleX(${idx/list.length})`;
+  });
+}
+
+function answer(i){
+  const {list,idx}=quizState, item=list[idx];
+  const btns=document.querySelectorAll("#opts .opt");
+  btns.forEach((b,j)=>{ b.disabled=true;
+    if(j===item.ans) b.classList.add("right");
+    else if(j===i) b.classList.add("wrong");
+    else b.classList.add("dim");
+  });
+  const ok=(i===item.ans);
+  recordStat(item.tag, ok);
+  const w=getWrong();
+  const has=w.some(x=>(typeof x==="number"? x : x.id)===item.id);
+  if(!ok && !has){ w.push({id:item.id,tag:item.tag,q:item.q,ex:item.ex}); setWrong(w); popBadge(); }
+  if(ok && has){ setWrong(w.filter(x=>(typeof x==="number"? x : x.id)!==item.id)); }
+  ok? quizState.right++ : quizState.wrongIds.push(item.id);
+  const ex=document.getElementById("explain");
+  ex.innerHTML=(ok? "✅ <b>答對了！</b> " : "❌ <b>答錯了</b>，已收入錯題本。 ")+item.ex;
+  ex.classList.add("on");
+  const bar=document.getElementById("pbar");
+  if(bar) bar.style.transform=`scaleX(${(idx+1)/list.length})`;
+  const slot=document.getElementById("next-slot");
+  if(quizState.idx+1 < list.length){
+    slot.innerHTML=`<button class="btn" onclick="nextQ()">下一題</button>`;
+  }else{
+    slot.innerHTML=`<button class="btn" onclick="renderResult()">查看成績</button>`;
+  }
+  updateBadge();
+}
+function nextQ(){ quizState.idx++; renderQ(); }
+
+function renderResult(){
+  const total=quizState.list.length, r=quizState.right;
+  const pct=Math.round(r/total*100);
+  let msg;
+  if(pct>=85) msg="🎉 優秀！乘方掌握得很好，可以預習乘方(二)和混合運算了。";
+  else if(pct>=60) msg="👍 不錯！把錯題本裡的題重練一遍，特別是 −aⁿ 與 (−a)ⁿ。";
+  else msg="💪 先回「學習重點」重溫符號規律，再重練錯題。";
+  document.getElementById("quiz-area").innerHTML=`
+    <h3>測驗完成！</h3>
+    <div class="score-big score-pop"><span id="score-n"></span></div>
+    <p class="result-msg">${msg}</p>
+    <div class="result-btns">
+      <button class="btn" onclick="startQuiz(QUESTIONS)">再測一次</button>
+      <button class="btn ghost" onclick="goWrong()">去錯題本重練</button>
+    </div>`;
+  const sn=document.getElementById("score-n");
+  countUp(sn, r, " / "+total);
+  if(pct>=85) confetti();
+}
+
+function goWrong(){
+  document.querySelector('nav button[data-s="wrong"]').click();
+}
+
+/* ---------- 錯題本 ---------- */
+function updateBadge(){
+  const n=getWrong().length;
+  document.getElementById("wrong-badge").textContent = n? `(${n})` : "";
+}
+
+function renderWrong(){
+  const ids=getWrong();
+  const list=document.getElementById("wrong-list");
+  const sum=document.getElementById("wrong-summary");
+  if(!ids.length){
+    sum.textContent="目前沒有錯題，太棒了！去做「驗收練習」試試。";
+    list.innerHTML="";
+    document.getElementById("btn-retry-all").style.display="none";
+    document.getElementById("btn-clear-wrong").style.display="none";
+    return;
+  }
+  sum.textContent=`共 ${ids.length} 道錯題。重練答對後會自動從錯題本移除。`;
+  list.innerHTML=ids.map((e,i)=>{
+    const item= typeof e==="number"? QUESTIONS.find(q=>q.id===e) : e;
+    return `<div class="wrong-item" style="--i:${i}">
+      <p class="q-count"><span class="tag t-hard">${item.tag}</span></p>
+      <p style="margin:6px 0">${item.q}</p>
+      <button class="btn ghost" style="margin-top:4px;padding:6px 16px" onclick="startQuiz([QUESTIONS.find(q=>q.id===${item.id})])">重練這題</button>
+    </div>`;
+  }).join("");
+  document.getElementById("btn-retry-all").style.display="inline-block";
+  document.getElementById("btn-clear-wrong").style.display="inline-block";
+}
+
+document.getElementById("btn-retry-all").onclick=()=>{
+  const list=getWrong().map(e=>QUESTIONS.find(q=>q.id===(typeof e==="number"? e : e.id)));
+  document.querySelector('nav button[data-s="quiz"]').click();
+  startQuiz(list);
+};
+document.getElementById("btn-clear-wrong").onclick=()=>{
+  if(confirm("確定要清空錯題本嗎？")){ setWrong([]); renderWrong(); updateBadge(); }
+};
+
+/* ---------- 弱項分析 ---------- */
+function renderAnalysis(){
+  const s=getStats();
+  const area=document.getElementById("analysis-area");
+  const tags=Object.keys(s);
+  if(!tags.length){
+    area.innerHTML=`<p class="q-count">還沒有練習記錄。先去做「驗收練習」，我再幫你分析弱項！</p>`;
+    return;
+  }
+  const rows=tags.map(t=>{
+    const {r,w}=s[t], total=r+w, pct=Math.round(r/total*100);
+    return {t,r,w,total,pct};
+  }).sort((a,b)=>a.pct-b.pct);
+  area.innerHTML=rows.map((o,i)=>{
+    const color=o.pct>=80?"var(--green)":o.pct>=50?"var(--amber)":"var(--stamp)";
+    return `<div class="bar-wrap" style="--i:${i}">
+      <div class="bar-label"><span>${o.t}</span><span>${o.r}/${o.total} 對（${o.pct}%）</span></div>
+      <div class="bar"><i style="--i:${i};background:${color};width:${o.pct}%"></i></div>
+    </div>`;
+  }).join("")+
+  `<h3 style="margin-top:18px">🎯 你的弱項與建議</h3>`+
+  rows.slice(0,3).filter(o=>o.pct<100).map(o=>
+    `<div class="formula warn" style="margin-top:8px"><b>${o.t}（對率 ${o.pct}%）</b>　${ADVICE[o.t]||""}</div>`
+  ).join("") +
+  (rows.every(o=>o.pct===100) ? `<div class="formula" style="margin-top:8px">全部知識點 100% 正確，本節已完全掌握！🎉</div>` : "");
+}
+document.getElementById("btn-reset-stats").onclick=()=>{
+  if(confirm("確定清除全部練習記錄？錯題本也會一併清空。")){
+    localStorage.removeItem(LS_STATS); localStorage.removeItem(LS_WRONG);
+    renderAnalysis(); updateBadge();
+  }
+};
+
+/* ---------- 初始化 ---------- */
+migrateWrong();
+renderQuizIntro();
+updateBadge();
+/* 支援工作台深層連結：?tab=wrong / analysis / quiz / formula */
+const urlTab=new URLSearchParams(location.search).get("tab");
+if(urlTab){ const b=document.querySelector(`nav button[data-s="${urlTab}"]`); if(b) b.click(); }
+</script>
+</body>
+</html>
